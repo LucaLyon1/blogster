@@ -9,23 +9,22 @@ async function Navbar() {
 
     return (
         <div className='py-10'>
-            <nav className="fixed top-0 w-full bg-white shadow-md flex justify-between items-center p-4">
+            <nav className="fixed top-0 w-full bg-white shadow-md flex justify-between items-center py-4 px-60">
                 {/* Logo - to be defined later */}
-                <div className="text-xl font-bold">Logo</div>
+                <Link href="/">
+                    <div className="text-xl font-bold">Logo</div>
+                </Link>
 
                 {/* Navigation Links */}
-                <ul className="flex space-x-4">
-                    <li>
-                        <Link className="text-gray-700 hover:text-gray-900" href="/product">
-                            Product
-                        </Link>
-                    </li>
-                    <li>
-                        <Link className="text-gray-700 hover:text-gray-900" href="/job-board">
-                            Job Board
-                        </Link>
-                    </li>
-                </ul>
+                <Link className="text-gray-700 hover:text-gray-900" href="/product">
+                    Product
+                </Link>
+                <Link className="text-gray-700 hover:text-gray-900" href="/job-board">
+                    Job Board
+                </Link>
+                <Link className="text-gray-700 hover:text-gray-900" href="/recruiter">
+                    My Offers
+                </Link>
 
                 {/* Create Job Offer Button */}
                 <Link href='/create-offer' className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">

@@ -12,7 +12,7 @@ export default function Home() {
             Your premier skill-based recruitment platform. Find the best talent or your dream job with ease.
           </p>
           <div className="flex justify-center space-x-4">
-            <Link href="/signup" className="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 transition duration-300">
+            <Link href="/create-offer" className="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 transition duration-300">
               Get Started
             </Link>
             <Link href="/learn-more" className="bg-gray-500 text-white px-6 py-3 rounded hover:bg-gray-600 transition duration-300">

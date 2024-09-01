@@ -23,7 +23,6 @@ export default function CreateTest() {
     const searchParams = useSearchParams();
     const { data: session } = useSession();
 
-
     useEffect(() => {
         const jobOfferId = searchParams.get("jobOfferId");
         if (jobOfferId) {
@@ -43,6 +42,11 @@ export default function CreateTest() {
 
     const addQuestion = () => {
         setQuestions([...questions, { description: "", answer1: "", answer2: "", answer3: "", answer4: "", correctAnswer: 1 }]);
+    };
+
+    const deleteQuestion = (index: number) => {
+        const newQuestions = questions.filter((_, i) => i !== index);
+        setQuestions(newQuestions);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -85,7 +89,14 @@ export default function CreateTest() {
                     />
                 </div>
                 {questions.map((question, index) => (
-                    <div key={index} className="my-4 p-4 border-2 rounded">
+                    <div key={index} className="my-4 p-4 border-2 rounded relative">
+                        <button
+                            type="button"
+                            onClick={() => deleteQuestion(index)}
+                            className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition duration-300"
+                        >
+                            X
+                        </button>
                         <label className="block text-gray-800 text-sm font-bold mb-2" htmlFor={`description-${index}`}>
                             Question {index + 1}
                         </label>
