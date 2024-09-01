@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function CreateOffer() {
     const [jobTitle, setJobTitle] = useState("");
@@ -10,6 +11,7 @@ export default function CreateOffer() {
     const [location, setLocation] = useState("");
     const [salaryRange, setSalaryRange] = useState("");
     const router = useRouter();
+    const { data: session } = useSession();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -19,12 +21,12 @@ export default function CreateOffer() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ jobTitle, jobDescription, company, location, salaryRange }),
+                body: JSON.stringify({ jobTitle, jobDescription, company, location, salaryRange, userId: session?.userId }),
             });
 
             if (response.ok) {
-                // Redirect or show success message
-                router.push("/");
+                const jobOffer = await response.json();
+                router.push(`/create-test?jobOfferId=${jobOffer.id}`);
             } else {
                 console.error('Failed to create job offer');
             }

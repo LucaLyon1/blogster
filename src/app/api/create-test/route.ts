@@ -2,13 +2,26 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(req: NextRequest) {
-    const { title, jobOfferId, questions } = await req.json();
+    const { title, jobOfferId, userId, questions } = await req.json();
+
+    if (!jobOfferId) {
+        return NextResponse.json({ error: 'jobOfferId is required' }, { status: 400 });
+    }
+
+    if (!userId) {
+        return NextResponse.json({ error: 'userId is required' }, { status: 400 });
+    }
 
     try {
         const newTest = await prisma.test.create({
             data: {
                 title,
-                jobOfferId,
+                jobOffer: {
+                    connect: { id: jobOfferId }
+                },
+                user: {
+                    connect: { id: userId }
+                },
                 questions: {
                     create: questions.map((q) => ({
                         description: q.description,
@@ -25,7 +38,6 @@ export async function POST(req: NextRequest) {
     } catch (error) {
         console.log(error);
         console.log('_______________________');
-        console.log(jobOfferId);
         return NextResponse.json({ error: 'Error creating test' }, { status: 500 });
     }
 }

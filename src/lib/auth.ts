@@ -5,5 +5,12 @@ import Google from "next-auth/providers/google"
 
 export const { auth, handlers } = NextAuth({
     adapter: PrismaAdapter(prisma),
-    providers: [Google]
+    providers: [Google],
+    callbacks: {
+        async session({ session, user }) {
+            // Add the user ID to the session object
+            session.user.id = user.id;
+            return session;
+        },
+    }
 })

@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface Question {
     description: string;
@@ -14,11 +15,21 @@ interface Question {
 
 export default function CreateTest() {
     const [title, setTitle] = useState<string>("");
-    const [jobOfferId, setJobOfferId] = useState<string>("cm0jhippk0000av4o8ggfmiwb"); // This should be set based on the job offer
+    const [jobOfferId, setJobOfferId] = useState<string>("");
     const [questions, setQuestions] = useState<Question[]>([
         { description: "", answer1: "", answer2: "", answer3: "", answer4: "", correctAnswer: 1 },
     ]);
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const { data: session } = useSession();
+
+
+    useEffect(() => {
+        const jobOfferId = searchParams.get("jobOfferId");
+        if (jobOfferId) {
+            setJobOfferId(jobOfferId);
+        }
+    }, [searchParams]);
 
     const handleQuestionChange = (index: number, field: keyof Question, value: string | number) => {
         const newQuestions = [...questions];
@@ -42,7 +53,7 @@ export default function CreateTest() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ title, jobOfferId, questions }),
+                body: JSON.stringify({ title, jobOfferId, questions, userId: session?.userId }),
             });
 
             if (response.ok) {
