@@ -14,6 +14,7 @@ interface JobOffer {
 
 export default function JobBoard() {
     const [jobOffers, setJobOffers] = useState<JobOffer[]>([]);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         // Fetch job offers from the API
@@ -30,6 +31,13 @@ export default function JobBoard() {
         fetchJobOffers();
     }, []);
 
+    const filteredJobs = jobOffers.filter(job =>
+        job.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.jobDescription.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="container mx-auto px-6 py-20">
             <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Job Board</h1>
@@ -38,15 +46,12 @@ export default function JobBoard() {
                     type="text"
                     placeholder="Search for jobs..."
                     className="w-full px-4 py-2 border rounded"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            <div className="mb-8">
-                <button className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition duration-300">
-                    Filter
-                </button>
-            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {jobOffers.map((job) => (
+                {filteredJobs.map((job) => (
                     <Link key={job.id} href={`/job-board/${job.id}`}>
                         <div className="bg-white p-6 rounded shadow-md cursor-pointer">
                             <h2 className="text-2xl font-bold text-gray-800 mb-2">{job.jobTitle}</h2>
