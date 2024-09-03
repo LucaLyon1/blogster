@@ -16,6 +16,10 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
             },
         });
 
+        if (profile && typeof profile.jobHistory === 'string') {
+            profile.jobHistory = JSON.parse(profile.jobHistory);
+        }
+
         if (!profile) {
             return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
         }

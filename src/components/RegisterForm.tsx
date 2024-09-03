@@ -1,27 +1,34 @@
 "use client";
 
-import { signIn, signOut } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
 
-export function LogInButton() {
+export function RegisterForm() {
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const result = await signIn('credentials', {
-            redirect: false,
-            email,
-            password,
-        });
-        if (result?.error) {
-            alert(result.error);
-        } else {
-            router.push('/dashboard');
+        try {
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password }),
+            });
+            if (response.ok) {
+                router.push('/login');
+            } else {
+                const data = await response.json();
+                alert(data.error);
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            alert('An error occurred during registration');
         }
     };
 
@@ -33,10 +40,22 @@ export function LogInButton() {
                     <p className="text-gray-500 text-lg font-semibold">Image Placeholder</p>
                 </div>
 
-                {/* Right side: Login form */}
+                {/* Right side: Register form */}
                 <div className="w-1/2 p-8">
-                    <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">Log In</h2>
+                    <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">Register</h2>
                     <form onSubmit={handleSubmit} className="space-y-6">
+                        <div>
+                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+                            <input
+                                id="name"
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                                className="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                                           focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            />
+                        </div>
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
                             <input
@@ -62,7 +81,7 @@ export function LogInButton() {
                             />
                         </div>
                         <button type="submit" className="w-full bg-blue-600 text-white px-4 py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-300">
-                            Log in
+                            Register
                         </button>
                     </form>
                     <div className="mt-8">
@@ -80,28 +99,17 @@ export function LogInButton() {
                                 className="w-full flex items-center justify-center px-6 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-base font-medium text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-300"
                             >
                                 <FcGoogle className="w-6 h-6 mr-3" />
-                                Sign in with Google
+                                Sign up with Google
                             </button>
                         </div>
                     </div>
                     <div className="mt-4 text-center">
-                        <Link href="/register" className="text-sm text-gray-500 hover:text-blue-500 hover:underline transition-colors duration-300">
-                            Don't have an account? Register
+                        <Link href="/login" className="text-sm text-gray-500 hover:text-blue-500 hover:underline transition-colors duration-300">
+                            Already registered? Log In
                         </Link>
                     </div>
                 </div>
             </div>
         </div>
-    );
-}
-
-export function LogOutButton() {
-    return (
-        <button
-            onClick={() => signOut()}
-            className="text-gray-600 bg-white border-2 border-blue-500 rounded-full px-4 py-2 font-medium transition duration-300 hover:text-white hover:bg-blue-500 hover:scale-105"
-        >
-            Log Out
-        </button>
     );
 }

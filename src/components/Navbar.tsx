@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import { LogInButton, LogOutButton } from './AuthForm';
+import { LogOutButton } from './AuthForm';
 import { Roboto_Slab } from 'next/font/google';
 
 export const robotoSlab = Roboto_Slab({
@@ -45,10 +45,10 @@ function Navbar() {
                 {/* Action Buttons */}
                 <div className="flex items-center space-x-4">
                     {/* Create Job Offer Button */}
-                    <Link href='/create-offer' className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition duration-300 font-semibold shadow-md">
+                    <Link href='/create-offer' className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition duration-300 shadow-md border-2 border-blue-500">
                         Create Job Offer
                     </Link>
-                    {session?.user ? <LogOutButton /> : <LogInButton />}
+                    {session?.user ? <LogOutButton /> : <Link href='/login'>Login</Link>}
                 </div>
 
                 {/* Mobile Menu Button (hidden on larger screens) */}
