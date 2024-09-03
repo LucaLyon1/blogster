@@ -1,15 +1,23 @@
 "use client";
 
-import { signIn, signOut } from "next-auth/react";
-import { useState } from "react";
+import { getSession, signIn, signOut } from "next-auth/react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 export function LogInButton() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
+    const { data: session, status } = useSession();
+
+    useEffect(() => {
+        if (status === "authenticated" && session?.user?.id) {
+            router.push(`/profile/${session.user.id}`);
+        }
+    }, [status, session, router]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -18,10 +26,16 @@ export function LogInButton() {
             email,
             password,
         });
+        console.log("SignIn result:", result);
         if (result?.error) {
+            console.error("SignIn error:", result.error);
             alert(result.error);
+        } else if (result?.ok) {
+            console.log("SignIn successful, redirecting...");
+            // You might want to force a session refresh here
+            await getSession();
         } else {
-            router.push('/dashboard');
+            console.error("Unexpected SignIn result:", result);
         }
     };
 

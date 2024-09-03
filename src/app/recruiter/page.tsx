@@ -22,7 +22,7 @@ export default function RecruiterOffers() {
         // Fetch job offers created by the recruiter
         const fetchJobOffers = async () => {
             try {
-                const response = await fetch(`/api/recruiter/job-offers/${session?.userId}`);
+                const response = await fetch(`/api/recruiter/job-offers/${session?.user?.id}`);
                 const data = await response.json();
                 setJobOffers(data);
             } catch (error) {

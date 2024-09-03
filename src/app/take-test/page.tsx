@@ -26,7 +26,7 @@ interface Grade {
 
 export default function TakeTest() {
     const [test, setTest] = useState<Test | null>(null);
-    const [answers, setAnswers] = useState<{ [key: string]: string }>({});
+    const [answers, setAnswers] = useState<{ [key: string]: number }>({});
     const [grade, setGrade] = useState<Grade | null>(null);
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -53,7 +53,7 @@ export default function TakeTest() {
         }
     }, [jobOfferId]);
 
-    const handleAnswerChange = (questionId: string, answer: string) => {
+    const handleAnswerChange = (questionId: string, answer: number) => {
         setAnswers({ ...answers, [questionId]: answer });
     };
 
@@ -65,7 +65,7 @@ export default function TakeTest() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ jobOfferId, answers, userId: session?.userId }),
+                body: JSON.stringify({ jobOfferId, answers, userId: session?.user?.id }),
             });
 
             if (response.ok) {
@@ -111,11 +111,11 @@ export default function TakeTest() {
                             {["answer1", "answer2", "answer3", "answer4"].map((answer, index) => (
                                 <div
                                     key={index}
-                                    className={`p-4 rounded-lg cursor-pointer transition duration-300 transform hover:scale-105 border-2 ${answers[question.id] === (index + 1).toString()
-                                            ? 'bg-blue-100 border-blue-500'
-                                            : 'bg-gray-100 hover:bg-gray-200 border-transparent hover:border-blue-500'
+                                    className={`p-4 rounded-lg cursor-pointer transition duration-300 transform hover:scale-105 border-2 ${answers[question.id] === index + 1
+                                        ? 'bg-blue-100 border-blue-500'
+                                        : 'bg-gray-100 hover:bg-gray-200 border-transparent hover:border-blue-500'
                                         }`}
-                                    onClick={() => handleAnswerChange(question.id, (index + 1).toString())}
+                                    onClick={() => handleAnswerChange(question.id, index + 1)}
                                 >
                                     <span className="font-semibold">{String.fromCharCode(65 + index)}.</span> {question[answer as keyof Question]}
                                 </div>

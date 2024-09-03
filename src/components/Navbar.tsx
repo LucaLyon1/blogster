@@ -48,7 +48,13 @@ function Navbar() {
                     <Link href='/create-offer' className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition duration-300 shadow-md border-2 border-blue-500">
                         Create Job Offer
                     </Link>
-                    {session?.user ? <LogOutButton /> : <Link href='/login'>Login</Link>}
+                    {session?.user ? (
+                        <LogOutButton />
+                    ) : (
+                        <Link href='/login' className="border-2 border-blue-500 text-blue-500 px-6 py-2 rounded-full hover:bg-blue-500 hover:text-white transition duration-300 transform hover:scale-105">
+                            Login
+                        </Link>
+                    )}
                 </div>
 
                 {/* Mobile Menu Button (hidden on larger screens) */}
