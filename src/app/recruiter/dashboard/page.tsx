@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 interface User {
+    id: string;
     name: string;
 }
 
@@ -53,7 +55,11 @@ export default function RecruiterDashboard() {
                     <tbody>
                         {testResults.map((result) => (
                             <tr key={result.id} className="hover:bg-gray-100 transition duration-300">
-                                <td className="py-2 border-b text-center">{result.user.name}</td>
+                                <td className="py-2 border-b text-center">
+                                    <Link href={`/profile/${result.user.id}`} className="text-blue-600 hover:underline">
+                                        {result.user.name}
+                                    </Link>
+                                </td>
                                 <td className="py-2 border-b text-center">{result.correctAnswers}</td>
                                 <td className="py-2 border-b text-center">{result.totalQuestions}</td>
                                 <td className="py-2 border-b text-center">{((result.correctAnswers / result.totalQuestions) * 100).toFixed(2)}%</td>

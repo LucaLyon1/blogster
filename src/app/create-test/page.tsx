@@ -74,9 +74,9 @@ export default function CreateTest() {
     return (
         <div className="container mx-auto px-6 py-20">
             <h1 className="text-4xl font-bold text-gray-900 mb-8 text-center">Create a Test</h1>
-            <form onSubmit={handleSubmit} className="max-w-lg mx-auto bg-white p-8 rounded shadow-md">
+            <form onSubmit={handleSubmit} className="max-w-3xl mx-auto bg-white p-8 rounded shadow-md">
                 <div className="mb-4">
-                    <label className="block text-gray-800 text-sm font-bold mb-2" htmlFor="title">
+                    <label className="block text-gray-600 text-sm mb-2" htmlFor="title">
                         Test Title
                     </label>
                     <input
@@ -86,6 +86,7 @@ export default function CreateTest() {
                         onChange={(e) => setTitle(e.target.value)}
                         className="w-full px-3 py-2 border-2 rounded"
                         required
+                        placeholder="Enter the test title"
                     />
                 </div>
                 {questions.map((question, index) => (
@@ -97,21 +98,22 @@ export default function CreateTest() {
                         >
                             X
                         </button>
-                        <label className="block text-gray-800 text-sm font-bold mb-2" htmlFor={`description-${index}`}>
+                        <label className="block text-gray-600 text-sm mb-2" htmlFor={`description-${index}`}>
                             Question {index + 1}
                         </label>
-                        <input
+                        <textarea
                             id={`description-${index}`}
-                            type="text"
                             value={question.description}
                             onChange={(e) => handleQuestionChange(index, "description", e.target.value)}
                             className="w-full px-3 py-2 border-2 rounded"
                             required
+                            placeholder="Enter the question"
+                            rows={3}
                         />
                         <div className="grid grid-cols-2 gap-4 mt-2">
                             {["answer1", "answer2", "answer3", "answer4"].map((answer, i) => (
                                 <div key={i}>
-                                    <label className="block text-gray-800 text-sm font-bold mb-2" htmlFor={`${answer}-${index}`}>
+                                    <label className="block text-gray-600 text-sm mb-2" htmlFor={`${answer}-${index}`}>
                                         Answer {i + 1}
                                     </label>
                                     <input
@@ -121,12 +123,13 @@ export default function CreateTest() {
                                         onChange={(e) => handleQuestionChange(index, answer as keyof Question, e.target.value)}
                                         className="w-full px-3 py-2 border-2 rounded"
                                         required
+                                        placeholder={`Enter answer ${i + 1}`}
                                     />
                                 </div>
                             ))}
                         </div>
                         <div className="mt-2">
-                            <label className="block text-gray-800 text-sm font-bold mb-2">
+                            <label className="block text-gray-600 text-sm mb-2">
                                 Correct Answer
                             </label>
                             <select

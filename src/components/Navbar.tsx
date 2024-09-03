@@ -1,8 +1,9 @@
+'use client'
+
 import React from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { LogInButton, LogOutButton } from './AuthForm';
-import { auth } from '@/lib/auth';
 import { Roboto_Slab } from 'next/font/google';
 
 export const robotoSlab = Roboto_Slab({
@@ -10,8 +11,8 @@ export const robotoSlab = Roboto_Slab({
     display: 'swap',
 });
 
-async function Navbar() {
-    const session = await auth();
+function Navbar() {
+    const { data: session } = useSession();
 
     return (
         <div className='py-8'>
@@ -30,9 +31,14 @@ async function Navbar() {
                         Job Board
                     </Link>
                     {session?.user && (
-                        <Link className="text-gray-700 hover:text-blue-600 font-medium transition duration-300 hover:underline" href="/recruiter">
-                            My Offers
-                        </Link>
+                        <>
+                            <Link className="text-gray-700 hover:text-blue-600 font-medium transition duration-300 hover:underline" href="/recruiter">
+                                My Offers
+                            </Link>
+                            <Link className="text-gray-700 hover:text-blue-600 font-medium transition duration-300 hover:underline" href={`/profile/${session.user.id}`}>
+                                Profile
+                            </Link>
+                        </>
                     )}
                 </div>
 

@@ -14,6 +14,7 @@ interface Question {
 }
 
 interface Test {
+    id: string;
     title: string;
     questions: Question[];
 }
@@ -33,7 +34,6 @@ export default function TakeTest() {
     const { data: session } = useSession();
 
     useEffect(() => {
-        // Fetch test details from the API
         const fetchTest = async () => {
             try {
                 const response = await fetch(`/api/tests?jobOfferId=${jobOfferId}`);
@@ -80,20 +80,20 @@ export default function TakeTest() {
     };
 
     if (!test) {
-        return <div>Loading...</div>;
+        return <div className="container mx-auto px-4 py-8">Loading...</div>;
     }
 
     if (grade) {
         return (
-            <div className="container mx-auto px-6 py-20">
+            <div className="container mx-auto px-4 py-8">
                 <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Test Completed</h1>
                 <div className="bg-white p-6 rounded shadow-md text-center">
                     <p className="text-gray-600 mb-4">You answered {grade.correctAnswers} out of {grade.totalQuestions} questions correctly.</p>
                     <button
-                        onClick={() => router.push("/")}
+                        onClick={() => router.push("/job-board")}
                         className="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 transition duration-300"
                     >
-                        Go to Job Board
+                        Back to Job Board
                     </button>
                 </div>
             </div>
@@ -101,32 +101,32 @@ export default function TakeTest() {
     }
 
     return (
-        <div className="container mx-auto px-6 py-20">
+        <div className="container mx-auto px-4 py-8 max-w-5xl">
             <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">{test.title}</h1>
-            <form onSubmit={handleSubmit} className="max-w-lg mx-auto bg-white p-8 rounded shadow-md">
-                {test.questions.map((question) => (
-                    <div key={question.id} className="mb-4">
-                        <p className="text-gray-700 mb-2">{question.description}</p>
-                        {["answer1", "answer2", "answer3", "answer4"].map((answer, index) => (
-                            <div key={index} className="mb-2">
-                                <label className="inline-flex items-center">
-                                    <input
-                                        type="radio"
-                                        name={`question-${question.id}`}
-                                        value={index + 1}
-                                        onChange={() => handleAnswerChange(question.id, (index + 1).toString())}
-                                        className="form-radio"
-                                    />
-                                    <span className="ml-2">{question[`answer${index + 1}` as keyof Question]}</span>
-                                </label>
-                            </div>
-                        ))}
+            <form onSubmit={handleSubmit} className="bg-white p-8 rounded shadow-md">
+                {test.questions.map((question, questionIndex) => (
+                    <div key={question.id} className="mb-8">
+                        <p className="text-xl text-gray-700 mb-4">{questionIndex + 1}. {question.description}</p>
+                        <div className="grid grid-cols-2 gap-4">
+                            {["answer1", "answer2", "answer3", "answer4"].map((answer, index) => (
+                                <div
+                                    key={index}
+                                    className={`p-4 rounded-lg cursor-pointer transition duration-300 transform hover:scale-105 border-2 ${answers[question.id] === (index + 1).toString()
+                                            ? 'bg-blue-100 border-blue-500'
+                                            : 'bg-gray-100 hover:bg-gray-200 border-transparent hover:border-blue-500'
+                                        }`}
+                                    onClick={() => handleAnswerChange(question.id, (index + 1).toString())}
+                                >
+                                    <span className="font-semibold">{String.fromCharCode(65 + index)}.</span> {question[answer as keyof Question]}
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 ))}
                 <div className="text-center">
                     <button
                         type="submit"
-                        className="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 transition duration-300"
+                        className="bg-blue-500 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-600 transition duration-300"
                     >
                         Submit Test
                     </button>

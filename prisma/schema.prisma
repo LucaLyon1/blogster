@@ -8,21 +8,23 @@ generator client {
 }
 
 model User {
-  id            String          @id @default(cuid())
-  name          String?
-  email         String          @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  // Optional for WebAuthn support
-  Authenticator Authenticator[]
-
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  TestResult TestResult[]
-  Test       Test[]
-  JobOffer   JobOffer[]
+  id              String          @id @default(cuid())
+  name            String?
+  email           String          @unique
+  emailVerified   DateTime?
+  image           String?
+  accounts        Account[]
+  sessions        Session[]
+  description     String?
+  currentJobTitle String?
+  jobHistory      Json? // This will store an array of job objects
+  phoneNumber     String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  TestResult      TestResult[]
+  Test            Test[]
+  JobOffer        JobOffer[]
+  Authenticator   Authenticator[]
 }
 
 model Account {
@@ -87,7 +89,10 @@ model JobOffer {
   jobDescription String
   company        String
   location       String
-  salaryRange    String
+  salaryLower    Int
+  salaryUpper    Int
+  jobType        String
+  workLocation   String
   userId         String
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
