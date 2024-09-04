@@ -2,7 +2,7 @@
 
 import { getSession, signIn, signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -11,13 +11,8 @@ export function LogInButton() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
-    const { data: session, status } = useSession();
-
-    useEffect(() => {
-        if (status === "authenticated" && session?.user?.id) {
-            router.push(`/profile/${session.user.id}`);
-        }
-    }, [status, session, router]);
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get('callbackUrl') || '/';
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -26,14 +21,12 @@ export function LogInButton() {
             email,
             password,
         });
-        console.log("SignIn result:", result);
         if (result?.error) {
-            console.error("SignIn error:", result.error);
             alert(result.error);
         } else if (result?.ok) {
-            console.log("SignIn successful, redirecting...");
             // You might want to force a session refresh here
             await getSession();
+            router.push(callbackUrl);
         } else {
             console.error("Unexpected SignIn result:", result);
         }
@@ -90,7 +83,7 @@ export function LogInButton() {
                         </div>
                         <div className="mt-6">
                             <button
-                                onClick={() => signIn('google')}
+                                onClick={() => signIn('google', { callbackUrl })}
                                 className="w-full flex items-center justify-center px-6 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-base font-medium text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-300"
                             >
                                 <FcGoogle className="w-6 h-6 mr-3" />

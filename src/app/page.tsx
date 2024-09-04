@@ -20,11 +20,11 @@ export default function Home() {
             Custom Skill Tests and Resume Access for Effortless Candidate Screening
           </p>
           <div className="flex justify-center space-x-4">
-            <Link href="/create-offer" className="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 transition duration-300">
-              Get Started for Free
+            <Link href="/learn-more" className="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 transition duration-300">
+              I am recruiting
             </Link>
-            <Link href="/learn-more" className="bg-gray-500 text-white px-6 py-3 rounded hover:bg-gray-600 transition duration-300">
-              See How It Works
+            <Link href="/job-board" className="bg-gray-500 text-white px-6 py-3 rounded hover:bg-gray-600 transition duration-300">
+              I am a candidate
             </Link>
           </div>
         </div>
