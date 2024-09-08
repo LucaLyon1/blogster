@@ -2,12 +2,19 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
-const secret = process.env.NEXTAUTH_SECRET;
+const secret = process.env.NEXTAUTH_SECRET || '';
 
 export async function middleware(req: NextRequest) {
     // Get the token from the request using NextAuth's getToken method
-    const token = await getToken({ req, secret });
-
+    const token = await getToken({
+        req,
+        secret: process.env.AUTH_SECRET!,
+        secureCookie: process.env.NODE_ENV === "production",
+        salt:
+            process.env.NODE_ENV === "production"
+                ? "__Secure-authjs.session-token"
+                : "authjs.session-token",
+    });
     // Define the paths you want to protect
     const protectedPaths = ['/dashboard', '/profile', '/create-offer', '/create-test', '/take-test'];
     const { pathname, search } = req.nextUrl;
