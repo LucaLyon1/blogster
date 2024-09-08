@@ -4,6 +4,18 @@ import { prisma } from '@/lib/prisma';
 export async function POST(req: NextRequest) {
     const { jobOfferId, answers, userId } = await req.json();
     try {
+        // Check if the user has already taken the test
+        const existingResult = await prisma.testResult.findFirst({
+            where: {
+                jobOfferId,
+                userId,
+            },
+        });
+
+        if (existingResult) {
+            return NextResponse.json({ error: 'You have already taken this test' }, { status: 400 });
+        }
+
         const test = await prisma.test.findFirst({
             where: { jobOfferId },
             include: { questions: true },
@@ -22,7 +34,7 @@ export async function POST(req: NextRequest) {
             }
         });
 
-        // Save the result to the database (optional)
+        // Save the result to the database
         await prisma.testResult.create({
             data: {
                 jobOfferId,

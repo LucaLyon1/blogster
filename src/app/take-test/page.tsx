@@ -28,6 +28,7 @@ export default function TakeTest() {
     const [test, setTest] = useState<Test | null>(null);
     const [answers, setAnswers] = useState<{ [key: string]: number }>({});
     const [grade, setGrade] = useState<Grade | null>(null);
+    const [hasAlreadyTaken, setHasAlreadyTaken] = useState(false);
     const router = useRouter();
     const searchParams = useSearchParams();
     const jobOfferId = searchParams.get("jobOfferId");
@@ -52,6 +53,24 @@ export default function TakeTest() {
             fetchTest();
         }
     }, [jobOfferId]);
+
+    useEffect(() => {
+        const checkIfAlreadyTaken = async () => {
+            try {
+                const response = await fetch(`/api/check-test-taken?jobOfferId=${jobOfferId}&userId=${session?.user?.id}`);
+                if (response.ok) {
+                    const { taken } = await response.json();
+                    setHasAlreadyTaken(taken);
+                }
+            } catch (error) {
+                console.error('Error checking if test was already taken:', error);
+            }
+        };
+
+        if (jobOfferId && session?.user?.id) {
+            checkIfAlreadyTaken();
+        }
+    }, [jobOfferId, session?.user?.id]);
 
     const handleAnswerChange = (questionId: string, answer: number) => {
         setAnswers({ ...answers, [questionId]: answer });
@@ -78,6 +97,23 @@ export default function TakeTest() {
             console.error('Error:', error);
         }
     };
+
+    if (hasAlreadyTaken) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Test Already Taken</h1>
+                <div className="bg-white p-6 rounded shadow-md text-center">
+                    <p className="text-gray-600 mb-4">You have already taken this test. You cannot take it again.</p>
+                    <button
+                        onClick={() => router.push("/job-board")}
+                        className="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 transition duration-300"
+                    >
+                        Back to Job Board
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     if (!test) {
         return <div className="container mx-auto px-4 py-8">Loading...</div>;
