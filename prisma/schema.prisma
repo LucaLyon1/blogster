@@ -26,6 +26,7 @@ model User {
   Test            Test[]
   JobOffer        JobOffer[]
   Authenticator   Authenticator[]
+  role            String          @default("free")
 }
 
 model Account {

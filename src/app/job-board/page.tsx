@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from 'next/link';
 import { JobFilter } from '@/components/JobFilter';
 import { FaSearch, FaMapMarkerAlt } from 'react-icons/fa';
+import { useSession } from 'next-auth/react';
 
 interface JobOffer {
     id: string;
@@ -23,6 +24,8 @@ export default function JobBoard() {
     const [filteredJobs, setFilteredJobs] = useState<JobOffer[]>([]);
     const [keywordSearch, setKeywordSearch] = useState('');
     const [locationSearch, setLocationSearch] = useState('');
+    const [applicationStatus, setApplicationStatus] = useState<{ [key: string]: boolean }>({});
+    const { data: session } = useSession();
 
     useEffect(() => {
         const fetchJobOffers = async () => {
@@ -31,13 +34,21 @@ export default function JobBoard() {
                 const data = await response.json();
                 setJobOffers(data);
                 setFilteredJobs(data);
+                if (session?.user?.id) {
+                    const statuses = await Promise.all(data.map(async (job: JobOffer) => {
+                        const res = await fetch(`/api/check-test?jobOfferId=${job.id}&userId=${session?.user?.id}`);
+                        const { taken } = await res.json();
+                        return [job.id, taken];
+                    }));
+                    setApplicationStatus(Object.fromEntries(statuses));
+                }
             } catch (error) {
                 console.error('Error fetching job offers:', error);
             }
         };
 
         fetchJobOffers();
-    }, []);
+    }, [session]);
 
     const handleFilter = (filters: any) => {
         let filtered = jobOffers;
@@ -179,6 +190,13 @@ export default function JobBoard() {
                                         <span className="mt-2 text-gray-400 text-xs">
                                             {formatDate(job.createdAt)}
                                         </span>
+                                        <button
+                                            className={`mt-2 px-4 py-2 rounded-full text-sm font-semibold ${applicationStatus[job.id] ? 'bg-gray-500 text-white' : 'bg-blue-500 text-white hover:bg-blue-600'
+                                                }`}
+                                            disabled={applicationStatus[job.id]}
+                                        >
+                                            {applicationStatus[job.id] ? 'Already Applied' : 'Apply Now'}
+                                        </button>
                                     </div>
                                 </div>
                             </div>
