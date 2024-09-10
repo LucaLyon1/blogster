@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(req: NextRequest) {
-    const { jobOfferId, answers, userId } = await req.json();
+    const { jobOfferId, answers, userId, timeUsed } = await req.json();
     try {
         // Check if the user has already taken the test
         const existingResult = await prisma.testResult.findFirst({
@@ -41,6 +41,7 @@ export async function POST(req: NextRequest) {
                 correctAnswers,
                 totalQuestions,
                 userId,
+                timeUsed,
             },
         });
 

@@ -33,6 +33,7 @@ export default function TakeTest() {
     const searchParams = useSearchParams();
     const jobOfferId = searchParams.get("jobOfferId");
     const { data: session } = useSession();
+    const [startTime, setStartTime] = useState<number | null>(null);
 
     useEffect(() => {
         const fetchTest = async () => {
@@ -51,6 +52,7 @@ export default function TakeTest() {
 
         if (jobOfferId) {
             fetchTest();
+            setStartTime(Date.now());
         }
     }, [jobOfferId]);
 
@@ -76,15 +78,24 @@ export default function TakeTest() {
         setAnswers({ ...answers, [questionId]: answer });
     };
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!test || !session?.user?.id) return;
+
+        const timeUsed = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
+
         try {
             const response = await fetch('/api/submit-test', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ jobOfferId, answers, userId: session?.user?.id }),
+                body: JSON.stringify({
+                    jobOfferId,
+                    answers,
+                    userId: session.user.id,
+                    timeUsed,
+                }),
             });
 
             if (response.ok) {
@@ -94,7 +105,7 @@ export default function TakeTest() {
                 console.error('Failed to submit test');
             }
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error submitting test:', error);
         }
     };
 

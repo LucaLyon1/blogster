@@ -1,46 +1,35 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getToken } from 'next-auth/jwt';
+import { auth } from '@/lib/auth';
+import { ROLES, hasRole } from '@/lib/role';
 
-const secret = process.env.NEXTAUTH_SECRET || '';
+export async function middleware(request: NextRequest) {
+    const session = await auth();
 
-export async function middleware(req: NextRequest) {
-    // Get the token from the request using NextAuth's getToken method
-    const token = await getToken({
-        req,
-        secret: process.env.AUTH_SECRET!,
-        secureCookie: process.env.NODE_ENV === "production",
-        salt:
-            process.env.NODE_ENV === "production"
-                ? "__Secure-authjs.session-token"
-                : "authjs.session-token",
-    });
-    // Define the paths you want to protect
-    const protectedPaths = ['/dashboard', '/profile', '/create-offer', '/create-test', '/take-test'];
-    const { pathname, search } = req.nextUrl;
-    // Check if the user is trying to access a protected path
-    const isProtectedPath = protectedPaths.some(path => pathname.startsWith(path));
-    // If the path is protected and the user is not authenticated, redirect them
-    if (isProtectedPath && !token) {
-        const url = new URL('/login', req.url);
-        const newUrl = pathname + search;
-        url.searchParams.set('callbackUrl', newUrl);
-        return NextResponse.redirect(url);
+    if (!session) {
+        return NextResponse.redirect(new URL('/login', request.url));
     }
 
-    // If authenticated or accessing a public path, continue
+    // Check for premium routes
+    if (request.nextUrl.pathname.startsWith('/premium') && !hasRole(session?.user?.role, ROLES.PREMIUM)) {
+        return NextResponse.redirect(new URL('/upgrade', request.url));
+    }
+
+    // Check for admin routes
+    if (request.nextUrl.pathname.startsWith('/admin') && !hasRole(session?.user?.role, ROLES.ADMIN)) {
+        return NextResponse.redirect(new URL('/', request.url));
+    }
+
     return NextResponse.next();
 }
 
 export const config = {
     matcher: [
-        /*
-         * Match all routes that require authentication.
-         * Add more patterns as needed.
-         */
         '/dashboard/:path*',
         '/create-offer/:path*',
         '/create-test/:path*',
         '/take-test',
+        '/premium/:path*',
+        '/admin/:path*',
     ],
 };

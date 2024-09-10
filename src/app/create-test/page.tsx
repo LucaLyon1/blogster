@@ -57,7 +57,7 @@ export default function CreateTest() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ title, jobOfferId, questions, userId: session?.userId }),
+                body: JSON.stringify({ title, jobOfferId, questions, userId: session?.user?.id }),
             });
 
             if (response.ok) {

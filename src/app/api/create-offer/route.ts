@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
         });
         return NextResponse.json(newJobOffer, { status: 201 });
     } catch (error) {
+        console.log(error)
         return NextResponse.json({ error: 'Error creating job offer' }, { status: 500 });
     }
 }

@@ -94,28 +94,28 @@ export default function JobBoard() {
     const getJobTypeColor = (jobType: string) => {
         switch (jobType.toLowerCase()) {
             case 'full-time':
-                return 'bg-green-500 text-white';
+                return 'bg-green-100 text-green-800';
             case 'part-time':
-                return 'bg-blue-500 text-white';
+                return 'bg-blue-100 text-blue-800';
             case 'internship':
-                return 'bg-yellow-500 text-white';
+                return 'bg-yellow-100 text-yellow-800';
             case 'freelance':
-                return 'bg-orange-500 text-white';
+                return 'bg-orange-100 text-orange-800';
             default:
-                return 'bg-gray-500 text-white';
+                return 'bg-gray-100 text-gray-800';
         }
     };
 
     const getWorkLocationColor = (workLocation: string) => {
         switch (workLocation.toLowerCase()) {
             case 'remote':
-                return 'bg-cyan-500 text-white';
+                return 'bg-purple-100 text-purple-800';
             case 'on-site':
-                return 'bg-red-500 text-white';
+                return 'bg-red-100 text-red-800';
             case 'hybrid':
-                return 'bg-purple-500 text-white';
+                return 'bg-indigo-100 text-indigo-800';
             default:
-                return 'bg-gray-500 text-white';
+                return 'bg-gray-100 text-gray-800';
         }
     };
 
@@ -129,7 +129,7 @@ export default function JobBoard() {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-8">Job Board</h1>
+            <h1 className="text-4xl font-bold text-gray-800 mb-8">Job Board</h1>
             <div className="flex mb-6">
                 <div className="flex-1 mr-2">
                     <div className="relative">
@@ -169,35 +169,41 @@ export default function JobBoard() {
                 <div className="w-full md:w-3/4 md:pl-8">
                     {filteredJobs.map((job) => (
                         <Link key={job.id} href={`/job-board/${job.id}`}>
-                            <div className="bg-white p-6 rounded-lg shadow-md mb-4 hover:shadow-lg transition duration-300 hover:border-blue-500 border-2 hover:scale-105">
-                                <div className="flex justify-between items-start">
+                            <div className="bg-white p-6 rounded-lg shadow-md mb-4 hover:shadow-lg hover:border-blue-500 hover:border-2 hover:scale-105 transition-all duration-200 ease-in-out">
+                                <div className="flex justify-between items-start mb-2">
                                     <div>
-                                        <h2 className="text-xl font-bold text-gray-800 mb-2">{job.jobTitle}</h2>
-                                        <p className="text-gray-600 mb-2">{job.company}</p>
-                                        <p className="text-gray-600 mb-2">{job.location}</p>
-                                        <p className="text-gray-500 mb-2 text-sm">{job.jobDescription.substring(0, 100)}...</p>
+                                        <h2 className="text-xl font-bold text-gray-800">{job.jobTitle}</h2>
+                                        <p className="text-lg text-blue-600">{job.company}</p>
                                     </div>
-                                    <div className="flex flex-col items-end">
-                                        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getJobTypeColor(job.jobType)}`}>
-                                            {job.jobType}
-                                        </span>
-                                        <span className="mt-2 text-lg font-bold text-gray-800">
-                                            ${job.salaryLower.toLocaleString()} - ${job.salaryUpper.toLocaleString()}
-                                        </span>
-                                        <span className={`mt-2 px-3 py-1 rounded-full text-sm font-semibold ${getWorkLocationColor(job.workLocation)}`}>
-                                            {job.workLocation}
-                                        </span>
-                                        <span className="mt-2 text-gray-400 text-xs">
-                                            {formatDate(job.createdAt)}
-                                        </span>
-                                        <button
-                                            className={`mt-2 px-4 py-2 rounded-full text-sm font-semibold ${applicationStatus[job.id] ? 'bg-gray-500 text-white' : 'bg-blue-500 text-white hover:bg-blue-600'
-                                                }`}
-                                            disabled={applicationStatus[job.id]}
-                                        >
-                                            {applicationStatus[job.id] ? 'Already Applied' : 'Apply Now'}
-                                        </button>
-                                    </div>
+                                    <span className="text-gray-500 text-sm">
+                                        Posted: {formatDate(job.createdAt)}
+                                    </span>
+                                </div>
+                                <div className="flex flex-wrap gap-2 mb-2">
+                                    <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+                                        {job.location}
+                                    </span>
+                                    <span className={`inline-block text-xs font-semibold px-2.5 py-0.5 rounded ${getWorkLocationColor(job.workLocation)}`}>
+                                        {job.workLocation}
+                                    </span>
+                                    <span className="inline-block bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+                                        ${job.salaryLower.toLocaleString()} - ${job.salaryUpper.toLocaleString()}
+                                    </span>
+                                    <span className={`inline-block text-xs font-semibold px-2.5 py-0.5 rounded ${getJobTypeColor(job.jobType)}`}>
+                                        {job.jobType}
+                                    </span>
+                                </div>
+                                <p className="text-gray-700 text-sm mb-4">{job.jobDescription.substring(0, 100)}...</p>
+                                <div className="flex justify-end">
+                                    <button
+                                        className={`py-1 px-3 rounded-md text-white font-semibold text-sm transition-all duration-200 ${applicationStatus[job.id]
+                                            ? 'bg-gray-500 cursor-not-allowed'
+                                            : 'bg-blue-500 hover:bg-blue-600 hover:shadow-md'
+                                            }`}
+                                        disabled={applicationStatus[job.id]}
+                                    >
+                                        {applicationStatus[job.id] ? 'Already Applied' : 'Apply Now'}
+                                    </button>
                                 </div>
                             </div>
                         </Link>

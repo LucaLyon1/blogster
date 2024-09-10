@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import Link from 'next/link';
 import { useSession } from "next-auth/react";
 
@@ -23,6 +23,7 @@ export default function JobDetails() {
     const [isApplied, setIsApplied] = useState(false);
     const { id } = useParams();
     const { data: session } = useSession();
+    const pathname = usePathname();
 
     useEffect(() => {
         const fetchJobOffer = async () => {
@@ -50,36 +51,69 @@ export default function JobDetails() {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-4">{jobOffer.jobTitle}</h1>
-            <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-xl text-gray-600 mb-4">{jobOffer.company}</p>
-                <p className="text-gray-600 mb-4">{jobOffer.location}</p>
-                <p className="text-gray-700 mb-4">{jobOffer.jobDescription}</p>
-                <div className="flex justify-between items-center mb-4">
-                    <span className="text-lg font-semibold text-gray-800">
-                        ${jobOffer.salaryLower.toLocaleString()} - ${jobOffer.salaryUpper.toLocaleString()}
-                    </span>
-                    <span className="px-3 py-1 bg-blue-500 text-white rounded-full text-sm">
-                        {jobOffer.jobType}
-                    </span>
+            <div className="bg-white p-8 rounded-lg shadow-lg">
+                <h1 className="text-4xl font-bold text-gray-800 mb-2">{jobOffer.jobTitle}</h1>
+                <p className="text-2xl text-blue-600 mb-4">{jobOffer.company}</p>
+
+                <hr className="my-6 border-t border-gray-200" />
+
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <span className="inline-block bg-green-100 text-green-800 text-sm font-semibold mr-2 px-2.5 py-0.5 rounded">
+                            Location
+                        </span>
+                        <p className="text-gray-700 mt-1">{jobOffer.location}</p>
+                    </div>
+                    <div>
+                        <span className="inline-block bg-purple-100 text-purple-800 text-sm font-semibold mr-2 px-2.5 py-0.5 rounded">
+                            Work Type
+                        </span>
+                        <p className="text-gray-700 mt-1">{jobOffer.workLocation}</p>
+                    </div>
+                    <div>
+                        <span className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold mr-2 px-2.5 py-0.5 rounded">
+                            Salary Range
+                        </span>
+                        <p className="text-gray-700 mt-1">${jobOffer.salaryLower.toLocaleString()} - ${jobOffer.salaryUpper.toLocaleString()}</p>
+                    </div>
+                    <div>
+                        <span className="inline-block bg-red-100 text-red-800 text-sm font-semibold mr-2 px-2.5 py-0.5 rounded">
+                            Job Type
+                        </span>
+                        <p className="text-gray-700 mt-1">{jobOffer.jobType}</p>
+                    </div>
                 </div>
-                <div className="flex justify-between items-center mb-6">
-                    <span className="text-gray-600">{jobOffer.workLocation}</span>
-                    <span className="text-gray-500 text-sm">Posted on: {new Date(jobOffer.createdAt).toLocaleDateString()}</span>
+
+                <hr className="my-6 border-t border-gray-200" />
+
+                <div className="mb-6">
+                    <h2 className="text-2xl font-semibold text-gray-800 mb-3">Job Description</h2>
+                    <p className="text-gray-700 whitespace-pre-line">{jobOffer.jobDescription}</p>
                 </div>
-                {session?.user ? (
-                    <button
-                        className={`w-full py-2 px-4 rounded-md text-white font-semibold ${isApplied ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
-                            }`}
-                        disabled={isApplied}
-                    >
-                        {isApplied ? 'Already Applied' : 'Apply Now'}
-                    </button>
-                ) : (
-                    <Link href="/login" className="block w-full text-center py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600">
-                        Log in to Apply
-                    </Link>
-                )}
+
+                <div className="flex justify-between items-center mt-8">
+                    <span className="text-gray-500 text-sm">
+                        Posted on: {new Date(jobOffer.createdAt).toLocaleDateString()}
+                    </span>
+                    {session?.user ? (
+                        <Link
+                            href={`/take-test?jobOfferId=${jobOffer.id}`}
+                            className={`py-3 px-6 rounded-md text-white font-semibold text-lg transition-all duration-200 ${isApplied
+                                ? 'bg-gray-500 cursor-not-allowed'
+                                : 'bg-blue-500 hover:bg-blue-600 hover:shadow-lg'
+                                }`}
+                        >
+                            {isApplied ? 'Already Applied' : 'Apply Now'}
+                        </Link>
+                    ) : (
+                        <Link
+                            href={`/login?callbackUrl=${encodeURIComponent(pathname)}`}
+                            className="py-3 px-6 bg-white text-blue-500 border-2 border-blue-500 rounded-md hover:bg-blue-50 hover:shadow-lg transition-all duration-200 ease-in-out font-semibold text-lg"
+                        >
+                            Log in to Apply
+                        </Link>
+                    )}
+                </div>
             </div>
         </div>
     );
