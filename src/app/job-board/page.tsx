@@ -25,30 +25,34 @@ export default function JobBoard() {
     const [keywordSearch, setKeywordSearch] = useState('');
     const [locationSearch, setLocationSearch] = useState('');
     const [applicationStatus, setApplicationStatus] = useState<{ [key: string]: boolean }>({});
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const { data: session } = useSession();
 
     useEffect(() => {
-        const fetchJobOffers = async () => {
-            try {
-                const response = await fetch('/api/job-offers');
-                const data = await response.json();
-                setJobOffers(data);
-                setFilteredJobs(data);
-                if (session?.user?.id) {
-                    const statuses = await Promise.all(data.map(async (job: JobOffer) => {
-                        const res = await fetch(`/api/check-test?jobOfferId=${job.id}&userId=${session?.user?.id}`);
-                        const { taken } = await res.json();
-                        return [job.id, taken];
-                    }));
-                    setApplicationStatus(Object.fromEntries(statuses));
-                }
-            } catch (error) {
-                console.error('Error fetching job offers:', error);
-            }
-        };
+        fetchJobOffers(currentPage);
+    }, [currentPage, session]);
 
-        fetchJobOffers();
-    }, [session]);
+    const fetchJobOffers = async (page: number) => {
+        try {
+            const response = await fetch(`/api/job-offers?page=${page}&limit=10`);
+            const data = await response.json();
+            setJobOffers(data.jobOffers);
+            setFilteredJobs(data.jobOffers);
+            setTotalPages(data.totalPages);
+
+            if (session?.user?.id) {
+                const statuses = await Promise.all(data.jobOffers.map(async (job: JobOffer) => {
+                    const res = await fetch(`/api/check-test?jobOfferId=${job.id}&userId=${session?.user?.id}`);
+                    const { taken } = await res.json();
+                    return [job.id, taken];
+                }));
+                setApplicationStatus(Object.fromEntries(statuses));
+            }
+        } catch (error) {
+            console.error('Error fetching job offers:', error);
+        }
+    };
 
     const handleFilter = (filters: any) => {
         let filtered = jobOffers;
@@ -125,6 +129,10 @@ export default function JobBoard() {
         const diffTime = Math.abs(now.getTime() - date.getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         return `${diffDays}d ago`;
+    };
+
+    const handlePageChange = (newPage: number) => {
+        setCurrentPage(newPage);
     };
 
     return (
@@ -208,6 +216,20 @@ export default function JobBoard() {
                             </div>
                         </Link>
                     ))}
+                    <div className="mt-8 flex justify-center">
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                            <button
+                                key={page}
+                                onClick={() => handlePageChange(page)}
+                                className={`mx-1 px-3 py-1 rounded ${currentPage === page
+                                        ? 'bg-blue-500 text-white'
+                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                    }`}
+                            >
+                                {page}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
