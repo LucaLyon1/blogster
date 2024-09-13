@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { FaArrowLeft } from 'react-icons/fa';
 
 interface Question {
     id: string;
@@ -29,6 +30,7 @@ export default function TakeTest() {
     const [answers, setAnswers] = useState<{ [key: string]: number }>({});
     const [grade, setGrade] = useState<Grade | null>(null);
     const [hasAlreadyTaken, setHasAlreadyTaken] = useState(false);
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const router = useRouter();
     const searchParams = useSearchParams();
     const jobOfferId = searchParams.get("jobOfferId");
@@ -78,8 +80,7 @@ export default function TakeTest() {
         setAnswers({ ...answers, [questionId]: answer });
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         if (!test || !session?.user?.id) return;
 
         const timeUsed = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
@@ -109,76 +110,117 @@ export default function TakeTest() {
         }
     };
 
+    const handleNextQuestion = () => {
+        if (test && currentQuestionIndex < test.questions.length - 1) {
+            setCurrentQuestionIndex(currentQuestionIndex + 1);
+        } else {
+            handleSubmit();
+        }
+    };
+
+    const handlePreviousQuestion = () => {
+        if (currentQuestionIndex > 0) {
+            setCurrentQuestionIndex(currentQuestionIndex - 1);
+        }
+    };
+
     if (hasAlreadyTaken) {
         return (
-            <div className="container mx-auto px-4 py-8">
-                <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Test Already Taken</h1>
-                <div className="bg-white p-6 rounded shadow-md text-center">
-                    <p className="text-gray-600 mb-4">You have already taken this test. You cannot take it again.</p>
-                    <button
-                        onClick={() => router.push("/job-board")}
-                        className="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 transition duration-300"
-                    >
-                        Back to Job Board
-                    </button>
+            <div className="flex items-center justify-center min-h-screen bg-gray-100">
+                <div className="container mx-auto px-4 py-8">
+                    <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Test Already Taken</h1>
+                    <div className="bg-white p-6 rounded shadow-md text-center">
+                        <p className="text-gray-600 mb-4">You have already taken this test. You cannot take it again.</p>
+                        <button
+                            onClick={() => router.push("/job-board")}
+                            className="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 transition duration-300"
+                        >
+                            Back to Job Board
+                        </button>
+                    </div>
                 </div>
             </div>
         );
     }
 
     if (!test) {
-        return <div className="container mx-auto px-4 py-8">Loading...</div>;
+        return <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-screen bg-gray-100">Loading...</div>;
     }
 
     if (grade) {
         return (
-            <div className="container mx-auto px-4 py-8">
-                <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Test Completed</h1>
-                <div className="bg-white p-6 rounded shadow-md text-center">
-                    <p className="text-gray-600 mb-4">You answered {grade.correctAnswers} out of {grade.totalQuestions} questions correctly.</p>
-                    <button
-                        onClick={() => router.push("/job-board")}
-                        className="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 transition duration-300"
-                    >
-                        Back to Job Board
-                    </button>
+            <div className="flex items-center justify-center min-h-screen bg-gray-100">
+                <div className="container mx-auto px-4 py-8">
+                    <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Test Completed</h1>
+                    <div className="bg-white p-6 rounded shadow-md text-center">
+                        <p className="text-gray-600 mb-4">You answered {grade.correctAnswers} out of {grade.totalQuestions} questions correctly.</p>
+                        <button
+                            onClick={() => router.push("/job-board")}
+                            className="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 transition duration-300"
+                        >
+                            Back to Job Board
+                        </button>
+                    </div>
                 </div>
             </div>
         );
     }
 
+    const currentQuestion = test.questions[currentQuestionIndex];
+    const totalQuestions = test.questions.length;
+    const completionPercentage = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+
     return (
-        <div className="container mx-auto px-4 py-8 max-w-5xl">
-            <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">{test.title}</h1>
-            <form onSubmit={handleSubmit} className="bg-white p-8 rounded shadow-md">
-                {test.questions.map((question, questionIndex) => (
-                    <div key={question.id} className="mb-8">
-                        <p className="text-xl text-gray-700 mb-4">{questionIndex + 1}. {question.description}</p>
-                        <div className="grid grid-cols-2 gap-4">
-                            {["answer1", "answer2", "answer3", "answer4"].map((answer, index) => (
-                                <div
-                                    key={index}
-                                    className={`p-4 rounded-lg cursor-pointer transition duration-300 transform hover:scale-105 border-2 ${answers[question.id] === index + 1
-                                        ? 'bg-blue-100 border-blue-500'
-                                        : 'bg-gray-100 hover:bg-gray-200 border-transparent hover:border-blue-500'
-                                        }`}
-                                    onClick={() => handleAnswerChange(question.id, index + 1)}
-                                >
-                                    <span className="font-semibold">{String.fromCharCode(65 + index)}.</span> {question[answer as keyof Question]}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                ))}
-                <div className="text-center">
-                    <button
-                        type="submit"
-                        className="bg-blue-500 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-600 transition duration-300"
-                    >
-                        Submit Test
-                    </button>
+        <div className="flex flex-col justify-between min-h-screen py-8 bg-gray-100">
+            <div className="container mx-auto px-4 max-w-3xl">
+                <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">{test.title}</h1>
+                <div className="mb-4 bg-white rounded-full h-4">
+                    <div className="bg-blue-500 h-4 rounded-full" style={{ width: `${completionPercentage}%` }}></div>
                 </div>
-            </form>
+                <p className="text-center text-blue-600 font-semibold mb-8">
+                    Question {currentQuestionIndex + 1}/{totalQuestions}
+                </p>
+                <div className="relative bg-white p-6 rounded-lg shadow-md flex flex-col justify-center items-center min-h-[60vh]">
+                    <button
+                        onClick={handlePreviousQuestion}
+                        className={`absolute top-5 left-5 bg-blue-500 text-white px-4 py-3 rounded-lg text-lg font-semibold hover:bg-blue-600 transition duration-300 ${currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        disabled={currentQuestionIndex === 0}
+                    >
+                        <FaArrowLeft />
+                    </button>
+                    <p className="text-2xl text-gray-800 mb-8 text-center">{currentQuestion.description}</p>
+                    <div className="space-y-4 w-full max-w-md">
+                        {["answer1", "answer2", "answer3", "answer4"].map((answer, index) => (
+                            <div
+                                key={index}
+                                className={`p-4 rounded-lg cursor-pointer transition duration-300 flex items-center ${answers[currentQuestion.id] === index + 1
+                                    ? 'bg-blue-500 text-white'
+                                    : 'bg-gray-100 hover:bg-gray-200'
+                                    }`}
+                                onClick={() => handleAnswerChange(currentQuestion.id, index + 1)}
+                            >
+                                <div className={`w-6 h-6 rounded-full border-2 mr-4 flex items-center justify-center ${answers[currentQuestion.id] === index + 1
+                                    ? 'border-white bg-white'
+                                    : 'border-gray-400'
+                                    }`}>
+                                    {answers[currentQuestion.id] === index + 1 && (
+                                        <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                                    )}
+                                </div>
+                                <span>{currentQuestion[answer as keyof Question]}</span>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="mt-8 w-full flex justify-between">
+                        <button
+                            onClick={handleNextQuestion}
+                            className="bg-blue-500 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-600 transition duration-300 flex-grow ml-4"
+                        >
+                            {currentQuestionIndex === totalQuestions - 1 ? 'Submit Answers' : 'Next Question'}
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

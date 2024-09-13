@@ -116,17 +116,19 @@ model Test {
 }
 
 model Question {
-  id            String   @id @default(cuid())
-  description   String
-  answer1       String
-  answer2       String
-  answer3       String
-  answer4       String
-  correctAnswer Int
-  testId        String
-  test          Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id             String        @id @default(cuid())
+  description    String
+  answer1        String
+  answer2        String
+  answer3        String
+  answer4        String
+  correctAnswer  Int
+  testId         String?
+  test           Test?         @relation(fields: [testId], references: [id], onDelete: Cascade)
+  testTemplateId String?
+  testTemplate   TestTemplate? @relation(fields: [testTemplateId], references: [id])
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 }
 
 model TestResult {
@@ -140,4 +142,14 @@ model TestResult {
   appliedAt      DateTime @default(now())
   timeUsed       Int // Time used in seconds
   // ... other fields
+}
+
+model TestTemplate {
+  id          String     @id @default(cuid())
+  title       String
+  description String
+  industry    String
+  questions   Question[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }

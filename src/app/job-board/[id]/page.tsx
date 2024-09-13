@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import { useParams, usePathname } from "next/navigation";
 import Link from 'next/link';
 import { useSession } from "next-auth/react";
+import { FaArrowLeft } from "react-icons/fa";
+import router from "next/router";
+import BackButton from "@/components/BackButton";
 
 interface JobOffer {
     id: string;
@@ -52,9 +55,9 @@ export default function JobDetails() {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="bg-white p-8 rounded-lg shadow-lg">
+                <BackButton />
                 <h1 className="text-4xl font-bold text-gray-800 mb-2">{jobOffer.jobTitle}</h1>
                 <p className="text-2xl text-blue-600 mb-4">{jobOffer.company}</p>
-
                 <hr className="my-6 border-t border-gray-200" />
 
                 <div className="grid grid-cols-2 gap-4 mb-6">
@@ -96,15 +99,21 @@ export default function JobDetails() {
                         Posted on: {new Date(jobOffer.createdAt).toLocaleDateString()}
                     </span>
                     {session?.user ? (
-                        <Link
-                            href={`/take-test?jobOfferId=${jobOffer.id}`}
-                            className={`py-3 px-6 rounded-md text-white font-semibold text-lg transition-all duration-200 ${isApplied
-                                ? 'bg-gray-500 cursor-not-allowed'
-                                : 'bg-blue-500 hover:bg-blue-600 hover:shadow-lg'
-                                }`}
-                        >
-                            {isApplied ? 'Already Applied' : 'Apply Now'}
-                        </Link>
+                        isApplied ? (
+                            <button
+                                className="py-3 px-6 rounded-md text-white font-semibold text-lg bg-gray-500 cursor-not-allowed"
+                                disabled
+                            >
+                                Already Applied
+                            </button>
+                        ) : (
+                            <Link
+                                href={`/take-test?jobOfferId=${jobOffer.id}`}
+                                className="py-3 px-6 rounded-md text-white font-semibold text-lg transition-all duration-200 bg-blue-500 hover:bg-blue-600 hover:shadow-lg"
+                            >
+                                Apply Now
+                            </Link>
+                        )
                     ) : (
                         <Link
                             href={`/login?callbackUrl=${encodeURIComponent(pathname)}`}

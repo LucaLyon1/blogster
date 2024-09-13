@@ -13,12 +13,21 @@ interface Question {
     correctAnswer: number;
 }
 
+interface TestTemplate {
+    id: string;
+    title: string;
+    description: string;
+    questions: Question[];
+}
+
 export default function CreateTest() {
     const [title, setTitle] = useState<string>("");
     const [jobOfferId, setJobOfferId] = useState<string>("");
     const [questions, setQuestions] = useState<Question[]>([
         { description: "", answer1: "", answer2: "", answer3: "", answer4: "", correctAnswer: 1 },
     ]);
+    const [templates, setTemplates] = useState<TestTemplate[]>([]);
+    const [selectedTemplate, setSelectedTemplate] = useState<string>("");
     const router = useRouter();
     const searchParams = useSearchParams();
     const { data: session } = useSession();
@@ -28,7 +37,34 @@ export default function CreateTest() {
         if (jobOfferId) {
             setJobOfferId(jobOfferId);
         }
+        fetchTemplates();
     }, [searchParams]);
+
+    const fetchTemplates = async () => {
+        try {
+            const response = await fetch('/api/test-templates');
+            if (response.ok) {
+                const data = await response.json();
+                setTemplates(data);
+            } else {
+                console.error('Failed to fetch templates');
+            }
+        } catch (error) {
+            console.error('Error fetching templates:', error);
+        }
+    };
+
+    const handleTemplateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const templateId = e.target.value;
+        setSelectedTemplate(templateId);
+        if (templateId) {
+            const template = templates.find(t => t.id === templateId);
+            if (template) {
+                setTitle(template.title);
+                setQuestions(template.questions);
+            }
+        }
+    };
 
     const handleQuestionChange = (index: number, field: keyof Question, value: string | number) => {
         const newQuestions = [...questions];
@@ -61,7 +97,6 @@ export default function CreateTest() {
             });
 
             if (response.ok) {
-                // Redirect or show success message
                 router.push("/");
             } else {
                 console.error('Failed to create test');
@@ -75,6 +110,24 @@ export default function CreateTest() {
         <div className="container mx-auto px-6 py-20">
             <h1 className="text-4xl font-bold text-gray-900 mb-8 text-center">Create a Test</h1>
             <form onSubmit={handleSubmit} className="max-w-3xl mx-auto bg-white p-8 rounded shadow-md">
+                <div className="mb-4">
+                    <label className="block text-gray-600 text-sm mb-2" htmlFor="template">
+                        Select a Template (Optional)
+                    </label>
+                    <select
+                        id="template"
+                        value={selectedTemplate}
+                        onChange={handleTemplateChange}
+                        className="w-full px-3 py-2 border-2 rounded"
+                    >
+                        <option value="">Select a template</option>
+                        {templates.map((template) => (
+                            <option key={template.id} value={template.id}>
+                                {template.title}
+                            </option>
+                        ))}
+                    </select>
+                </div>
                 <div className="mb-4">
                     <label className="block text-gray-600 text-sm mb-2" htmlFor="title">
                         Test Title

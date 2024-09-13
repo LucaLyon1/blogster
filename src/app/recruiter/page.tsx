@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 interface JobOffer {
     id: string;
@@ -74,33 +75,35 @@ export default function RecruiterOffers() {
             <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">My Job Offers</h1>
             <div className="space-y-6">
                 {jobOffers.map((job) => (
-                    <div key={job.id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 hover:border-blue-500 border-2 hover:scale-105">
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <h2 className="text-2xl font-bold text-gray-800 mb-2">{job.jobTitle}</h2>
-                                <p className="text-gray-600 mb-2">{job.company}</p>
-                                <p className="text-gray-600 mb-2">{job.location}</p>
-                                <p className="text-gray-500 mb-2 text-sm">{job.jobDescription.substring(0, 150)}...</p>
-                            </div>
-                            <div className="flex flex-col items-end">
-                                <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getJobTypeColor(job.jobType)} mb-2`}>
-                                    {job.jobType}
-                                </span>
-                                <span className="text-lg font-bold text-gray-800 mb-2">
-                                    ${job.salaryLower.toLocaleString()} - ${job.salaryUpper.toLocaleString()}
-                                </span>
-                                <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getWorkLocationColor(job.workLocation)} mb-2`}>
-                                    {job.workLocation}
-                                </span>
-                                <button
-                                    onClick={() => handleViewDashboard(job.id)}
-                                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
-                                >
-                                    View Dashboard
-                                </button>
+                    <Link href={`/recruiter/dashboard?jobOfferId=${job.id}`} key={job.id} className="p-6">
+                        <div key={job.id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 hover:border-blue-500 border-2 hover:scale-105">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <h2 className="text-2xl font-bold text-gray-800 mb-2">{job.jobTitle}</h2>
+                                    <p className="text-gray-600 mb-2">{job.company}</p>
+                                    <p className="text-gray-600 mb-2">{job.location}</p>
+                                    <p className="text-gray-500 mb-2 text-sm">{job.jobDescription.substring(0, 150)}...</p>
+                                </div>
+                                <div className="flex flex-col items-end">
+                                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getJobTypeColor(job.jobType)} mb-2`}>
+                                        {job.jobType}
+                                    </span>
+                                    <span className="text-lg font-bold text-gray-800 mb-2">
+                                        ${job.salaryLower.toLocaleString()} - ${job.salaryUpper.toLocaleString()}
+                                    </span>
+                                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getWorkLocationColor(job.workLocation)} mb-2`}>
+                                        {job.workLocation}
+                                    </span>
+                                    <button
+                                        onClick={() => handleViewDashboard(job.id)}
+                                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
+                                    >
+                                        View Dashboard
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </Link>
                 ))}
             </div>
         </div>
