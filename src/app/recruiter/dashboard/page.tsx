@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { FaUsers, FaClock, FaTrophy, FaChartLine } from 'react-icons/fa';
+import BackButton from "@/components/BackButton";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -153,6 +154,7 @@ export default function RecruiterDashboard() {
 
     return (
         <div className="container mx-auto px-4 py-8">
+            <BackButton />
             <div className="my-12">
                 <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Recruiter Dashboard</h1>
             </div>

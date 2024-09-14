@@ -29,6 +29,8 @@ export default function CreateTest() {
     ]);
     const [templates, setTemplates] = useState<TestTemplate[]>([]);
     const [selectedTemplate, setSelectedTemplate] = useState<string>("");
+    const [industries, setIndustries] = useState<string[]>([]);
+    const [selectedIndustry, setSelectedIndustry] = useState<string>("");
     const router = useRouter();
     const searchParams = useSearchParams();
     const { data: session } = useSession();
@@ -47,6 +49,9 @@ export default function CreateTest() {
             if (response.ok) {
                 const data = await response.json();
                 setTemplates(data);
+                // Extract unique industries from templates
+                const industries = [...new Set(data.map((template: TestTemplate) => template.industry))];
+                setIndustries(industries);
             } else {
                 console.error('Failed to fetch templates');
             }
@@ -113,6 +118,24 @@ export default function CreateTest() {
                 <h1 className="text-4xl font-bold text-gray-900 mb-8 text-center">Create a Test</h1>
                 <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg">
                     <div className="mb-8">
+                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="industry">
+                            Select Industry
+                        </label>
+                        <select
+                            id="industry"
+                            value={selectedIndustry}
+                            onChange={(e) => setSelectedIndustry(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="">All Industries</option>
+                            {industries.map((industry) => (
+                                <option key={industry} value={industry}>
+                                    {industry}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="mb-8">
                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="template">
                             Select a Template (Optional)
                         </label>
@@ -123,11 +146,13 @@ export default function CreateTest() {
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             <option value="">Select a template</option>
-                            {templates.map((template) => (
-                                <option key={template.id} value={template.id}>
-                                    {template.title}
-                                </option>
-                            ))}
+                            {templates
+                                .filter((template) => !selectedIndustry || template.industry === selectedIndustry)
+                                .map((template) => (
+                                    <option key={template.id} value={template.id}>
+                                        {template.title}
+                                    </option>
+                                ))}
                         </select>
                     </div>
                     <div className="mb-8">

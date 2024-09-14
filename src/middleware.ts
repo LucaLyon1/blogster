@@ -7,7 +7,8 @@ export async function middleware(request: NextRequest) {
     const session = await auth();
 
     if (!session) {
-        return NextResponse.redirect(new URL('/login', request.url));
+        const callbackUrl = encodeURIComponent(request.nextUrl.pathname + request.nextUrl.search);
+        return NextResponse.redirect(new URL(`/login?callbackUrl=${callbackUrl}`, request.url));
     }
 
     // Check for premium routes

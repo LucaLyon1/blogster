@@ -5,14 +5,17 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { LogOutButton } from './AuthForm';
 import { Roboto_Slab } from 'next/font/google';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 export const robotoSlab = Roboto_Slab({
     subsets: ['latin'],
     display: 'swap',
 });
 
-function Navbar() {
+export default function Navbar() {
     const { data: session } = useSession();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
 
     return (
         <div className='py-8'>
@@ -51,7 +54,10 @@ function Navbar() {
                     {session?.user ? (
                         <LogOutButton />
                     ) : (
-                        <Link href='/login' className="border-2 border-blue-500 text-blue-500 px-6 py-2 rounded-full hover:bg-blue-500 hover:text-white transition duration-300 transform hover:scale-105">
+                        <Link
+                            href={`/login?callbackUrl=${encodeURIComponent(pathname + (searchParams ? '?' + searchParams.toString() : ''))}`}
+                            className="border-2 border-blue-500 text-blue-500 px-6 py-2 rounded-full hover:bg-blue-500 hover:text-white transition duration-300 transform hover:scale-105"
+                        >
                             Login
                         </Link>
                     )}
@@ -68,4 +74,3 @@ function Navbar() {
     );
 };
 
-export default Navbar;

@@ -104,7 +104,7 @@ export function RegisterForm() {
                         </div>
                     </div>
                     <div className="mt-4 text-center">
-                        <Link href="/login" className="text-sm text-gray-500 hover:text-blue-500 hover:underline transition-colors duration-300">
+                        <Link href={`/login?callbackUrl=${encodeURIComponent(window.location.pathname + window.location.search)}`} className="text-sm text-gray-500 hover:text-blue-500 hover:underline transition-colors duration-300">
                             Already registered? Log In
                         </Link>
                     </div>

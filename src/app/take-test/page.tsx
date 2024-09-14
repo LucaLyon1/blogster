@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { FaArrowLeft } from 'react-icons/fa';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 interface Question {
     id: string;
@@ -172,34 +172,40 @@ export default function TakeTest() {
 
     return (
         <div className="flex flex-col justify-between min-h-screen py-8 bg-gray-100">
-            <div className="container mx-auto px-4 max-w-3xl">
+            <div className="relative container mx-auto px-4 max-w-3xl">
                 <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">{test.title}</h1>
                 <div className="mb-4 bg-white rounded-full h-4">
                     <div className="bg-blue-500 h-4 rounded-full" style={{ width: `${completionPercentage}%` }}></div>
                 </div>
-                <p className="text-center text-blue-600 font-semibold mb-8">
-                    Question {currentQuestionIndex + 1}/{totalQuestions}
-                </p>
-                <div className="relative bg-white p-6 rounded-lg shadow-md flex flex-col justify-center items-center min-h-[60vh]">
+                <div className="flex items-center justify-between mb-8">
                     <button
                         onClick={handlePreviousQuestion}
-                        className={`absolute top-5 left-5 bg-blue-500 text-white px-4 py-3 rounded-lg text-lg font-semibold hover:bg-blue-600 transition duration-300 ${currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`text-gray-500 px-4 py-3 rounded-lg text-lg font-semibold hover:text-gray-800 transition duration-300 ${currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
                         disabled={currentQuestionIndex === 0}
                     >
-                        <FaArrowLeft />
+                        <FaArrowLeft className="inline-block mr-2" /> Previous
                     </button>
+                    <div className="text-center text-blue-600 font-semibold">
+                        Question {currentQuestionIndex + 1}/{totalQuestions}
+                    </div>
+                    <div className="invisible">
+                        {/* This invisible div helps maintain the centering of the question counter */}
+                        <FaArrowLeft className="inline-block mr-2" /> Previous
+                    </div>
+                </div>
+                <div className="bg-white px-12 py-4 rounded-lg shadow-md flex flex-col justify-center items-center min-h-[60vh]">
                     <p className="text-2xl text-gray-800 mb-8 text-center">{currentQuestion.description}</p>
                     <div className="space-y-4 w-full max-w-md">
                         {["answer1", "answer2", "answer3", "answer4"].map((answer, index) => (
                             <div
                                 key={index}
-                                className={`p-4 rounded-lg cursor-pointer transition duration-300 flex items-center ${answers[currentQuestion.id] === index + 1
+                                className={`p-4 rounded-lg cursor-pointer transition duration-300 flex items-start ${answers[currentQuestion.id] === index + 1
                                     ? 'bg-blue-500 text-white'
                                     : 'bg-gray-100 hover:bg-gray-200'
                                     }`}
                                 onClick={() => handleAnswerChange(currentQuestion.id, index + 1)}
                             >
-                                <div className={`w-6 h-6 rounded-full border-2 mr-4 flex items-center justify-center ${answers[currentQuestion.id] === index + 1
+                                <div className={`w-6 h-6 rounded-full border-2 mr-4 flex-shrink-0 flex items-center justify-center ${answers[currentQuestion.id] === index + 1
                                     ? 'border-white bg-white'
                                     : 'border-gray-400'
                                     }`}>
@@ -207,16 +213,17 @@ export default function TakeTest() {
                                         <div className="w-3 h-3 rounded-full bg-blue-500"></div>
                                     )}
                                 </div>
-                                <span>{currentQuestion[answer as keyof Question]}</span>
+                                <span className="flex-grow">{currentQuestion[answer as keyof Question]}</span>
                             </div>
                         ))}
                     </div>
-                    <div className="mt-8 w-full flex justify-between">
+                    <div className="mt-8 w-full flex justify-end">
                         <button
                             onClick={handleNextQuestion}
-                            className="bg-blue-500 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-600 transition duration-300 flex-grow ml-4"
+                            className="bg-blue-500 text-white px-6 py-2 rounded-full text-base hover:bg-blue-600 transition duration-300 flex items-center m-auto"
                         >
                             {currentQuestionIndex === totalQuestions - 1 ? 'Submit Answers' : 'Next Question'}
+                            {currentQuestionIndex !== totalQuestions - 1 && <FaArrowRight className="ml-2" />}
                         </button>
                     </div>
                 </div>

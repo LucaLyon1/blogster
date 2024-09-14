@@ -1,5 +1,6 @@
 import { Roboto, Roboto_Slab } from 'next/font/google';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const roboto = Roboto({
     weight: ['400', '700'],
@@ -122,9 +123,11 @@ export default function LearnMore() {
                 <section className="bg-gradient-to-br from-blue-500 to-indigo-600 py-20 text-white">
                     <div className="container mx-auto px-4 text-center">
                         <h2 className="text-3xl font-bold mb-6">Transform your recruitment strategy with <span className={robotoSlab.className}>finnnest.</span></h2>
-                        <button className="bg-white text-blue-600 hover:bg-blue-100 font-bold py-3 px-6 rounded-full text-lg transition duration-300">
-                            Get Started Now
-                        </button>
+                        <Link href="/create-offer">
+                            <button className="bg-white text-blue-600 hover:bg-blue-100 font-bold py-3 px-6 rounded-full text-lg transition duration-300">
+                                Get Started Now
+                            </button>
+                        </Link>
                     </div>
                 </section>
             </main>

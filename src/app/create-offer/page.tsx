@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession, signIn } from "next-auth/react";
+import { FaBuilding, FaMapMarkerAlt, FaDollarSign, FaBriefcase, FaLaptopHouse } from 'react-icons/fa';
+import BackButton from '@/components/BackButton';
 
 export default function CreateOffer() {
     const [jobTitle, setJobTitle] = useState("");
@@ -19,7 +21,7 @@ export default function CreateOffer() {
 
     useEffect(() => {
         if (status === "unauthenticated") {
-            signIn();
+            signIn(undefined, { callbackUrl: window.location.pathname + window.location.search });
         }
     }, [status]);
 
@@ -79,132 +81,166 @@ export default function CreateOffer() {
     }
 
     return (
-        <div className="container mx-auto px-6 py-20">
-            <h1 className="text-4xl font-bold text-blue-500 mb-8 text-center">Create a Job Offer</h1>
-            <form onSubmit={handleSubmit} className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="jobTitle">
-                        Job Title
-                    </label>
-                    <input
-                        id="jobTitle"
-                        type="text"
-                        value={jobTitle}
-                        onChange={(e) => setJobTitle(e.target.value)}
-                        className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
-                    />
+        <div className="bg-gray-100 min-h-screen">
+            <nav className="bg-white shadow-md p-4">
+                <div className="container mx-auto flex justify-between items-center">
+                    <BackButton />
+                    <span className="text-gray-500 font-semibold">Draft</span>
                 </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="jobDescription">
-                        Job Description
-                    </label>
-                    <textarea
-                        id="jobDescription"
-                        value={jobDescription}
-                        onChange={(e) => setJobDescription(e.target.value)}
-                        className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
-                    />
+            </nav>
+            <div className="container mx-auto px-4 py-8">
+                <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
+                    <h1 className="text-4xl font-bold text-blue-600 mb-8 text-center">Create a Job Offer</h1>
+                    <form onSubmit={handleSubmit} className="space-y-8">
+                        <div className="space-y-6">
+                            <h2 className="text-2xl font-semibold text-gray-700">Basic Information</h2>
+                            <hr className="border-gray-300" />
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="jobTitle">
+                                    Job Title
+                                </label>
+                                <input
+                                    id="jobTitle"
+                                    type="text"
+                                    value={jobTitle}
+                                    onChange={(e) => setJobTitle(e.target.value)}
+                                    className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="jobDescription">
+                                    Job Description
+                                </label>
+                                <textarea
+                                    id="jobDescription"
+                                    value={jobDescription}
+                                    onChange={(e) => setJobDescription(e.target.value)}
+                                    className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    rows={4}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-6">
+                            <h2 className="text-2xl font-semibold text-gray-700">Company Details</h2>
+                            <hr className="border-gray-300" />
+                            <div className="flex space-x-4">
+                                <div className="w-1/2">
+                                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="company">
+                                        <FaBuilding className="inline-block mr-2" />Company
+                                    </label>
+                                    <input
+                                        id="company"
+                                        type="text"
+                                        value={company}
+                                        onChange={(e) => setCompany(e.target.value)}
+                                        className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        required
+                                    />
+                                </div>
+                                <div className="w-1/2">
+                                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="location">
+                                        <FaMapMarkerAlt className="inline-block mr-2" />Location
+                                    </label>
+                                    <input
+                                        id="location"
+                                        type="text"
+                                        value={location}
+                                        onChange={(e) => setLocation(e.target.value)}
+                                        className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-6">
+                            <h2 className="text-2xl font-semibold text-gray-700">Compensation</h2>
+                            <hr className="border-gray-300" />
+                            <div className="flex space-x-4">
+                                <div className="w-1/2">
+                                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="salaryLower">
+                                        <FaDollarSign className="inline-block mr-2" />Salary Range (Lower)
+                                    </label>
+                                    <input
+                                        id="salaryLower"
+                                        type="number"
+                                        value={salaryLower}
+                                        onChange={(e) => setSalaryLower(Number(e.target.value))}
+                                        className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        required
+                                    />
+                                </div>
+                                <div className="w-1/2">
+                                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="salaryUpper">
+                                        <FaDollarSign className="inline-block mr-2" />Salary Range (Upper)
+                                    </label>
+                                    <input
+                                        id="salaryUpper"
+                                        type="number"
+                                        value={salaryUpper}
+                                        onChange={(e) => setSalaryUpper(Number(e.target.value))}
+                                        className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-6">
+                            <h2 className="text-2xl font-semibold text-gray-700">Job Details</h2>
+                            <hr className="border-gray-300" />
+                            <div className="flex space-x-4">
+                                <div className="w-1/2">
+                                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="jobType">
+                                        <FaBriefcase className="inline-block mr-2" />Job Type
+                                    </label>
+                                    <select
+                                        id="jobType"
+                                        value={jobType}
+                                        onChange={(e) => setJobType(e.target.value)}
+                                        className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        required
+                                    >
+                                        <option value="">Select Job Type</option>
+                                        <option value="Full-time">Full-time</option>
+                                        <option value="Part-time">Part-time</option>
+                                        <option value="Contract">Contract</option>
+                                        <option value="Internship">Internship</option>
+                                    </select>
+                                </div>
+                                <div className="w-1/2">
+                                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="workLocation">
+                                        <FaLaptopHouse className="inline-block mr-2" />Work Location
+                                    </label>
+                                    <select
+                                        id="workLocation"
+                                        value={workLocation}
+                                        onChange={(e) => setWorkLocation(e.target.value)}
+                                        className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        required
+                                    >
+                                        <option value="">Select Work Location</option>
+                                        <option value="On-site">On-site</option>
+                                        <option value="Remote">Remote</option>
+                                        <option value="Hybrid">Hybrid</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex justify-center mt-8">
+                            <button
+                                type="submit"
+                                className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            >
+                                Create Test
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="company">
-                        Company
-                    </label>
-                    <input
-                        id="company"
-                        type="text"
-                        value={company}
-                        onChange={(e) => setCompany(e.target.value)}
-                        className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
-                    />
-                </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="location">
-                        Location
-                    </label>
-                    <input
-                        id="location"
-                        type="text"
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
-                    />
-                </div>
-                <div className="mb-4 flex space-x-4">
-                    <div className="w-1/2">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="salaryLower">
-                            Salary Range (Lower)
-                        </label>
-                        <input
-                            id="salaryLower"
-                            type="number"
-                            value={salaryLower}
-                            onChange={(e) => setSalaryLower(Number(e.target.value))}
-                            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            required
-                        />
-                    </div>
-                    <div className="w-1/2">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="salaryUpper">
-                            Salary Range (Upper)
-                        </label>
-                        <input
-                            id="salaryUpper"
-                            type="number"
-                            value={salaryUpper}
-                            onChange={(e) => setSalaryUpper(Number(e.target.value))}
-                            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            required
-                        />
-                    </div>
-                </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="jobType">
-                        Job Type
-                    </label>
-                    <select
-                        id="jobType"
-                        value={jobType}
-                        onChange={(e) => setJobType(e.target.value)}
-                        className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
-                    >
-                        <option value="">Select job type</option>
-                        <option value="full-time">Full-time</option>
-                        <option value="part-time">Part-time</option>
-                        <option value="freelance">Freelance</option>
-                        <option value="internship">Internship</option>
-                    </select>
-                </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="workLocation">
-                        Work Location
-                    </label>
-                    <select
-                        id="workLocation"
-                        value={workLocation}
-                        onChange={(e) => setWorkLocation(e.target.value)}
-                        className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
-                    >
-                        <option value="">Select work location</option>
-                        <option value="on-site">On-site</option>
-                        <option value="remote">Remote</option>
-                        <option value="hybrid">Hybrid</option>
-                    </select>
-                </div>
-                <div className="text-center">
-                    <button
-                        type="submit"
-                        className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-                    >
-                        Create Offer
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
     );
 }
