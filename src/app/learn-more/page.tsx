@@ -1,6 +1,7 @@
 import { Roboto, Roboto_Slab } from 'next/font/google';
 import Image from 'next/image';
 import Link from 'next/link';
+import { FaUser, FaUserTie, FaChartLine, FaUsers, FaLightbulb } from 'react-icons/fa';
 
 const roboto = Roboto({
     weight: ['400', '700'],
@@ -51,7 +52,7 @@ export default function LearnMore() {
                                 </ul>
                             </div>
                             <div className="md:w-1/2 mt-8 md:mt-0">
-                                <Image src="/images/test-creation.svg" alt="Test Creation" width={500} height={300} className="rounded-lg shadow-lg" />
+                                <Image src="/test-creation.png" alt="Test Creation" width={500} height={300} className="rounded-lg shadow-lg" />
                             </div>
                         </div>
                     </div>
@@ -60,33 +61,52 @@ export default function LearnMore() {
                 <section className="bg-gray-100 py-20">
                     <div className="container mx-auto px-4">
                         <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">Instant Results for Enhanced Experience</h2>
-                        <div className="flex flex-col md:flex-row-reverse items-center justify-between">
-                            <div className="md:w-1/2 md:pl-12">
-                                <h3 className="text-2xl font-bold text-gray-800 mb-4">For Candidates:</h3>
+                        <div className="flex flex-col md:flex-row justify-between space-y-8 md:space-y-0 md:space-x-8">
+                            <div className="md:w-1/2 bg-white rounded-xl shadow-xl p-8">
+                                <h3 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                                    <FaUser className="text-blue-500 mr-2" />
+                                    For Candidates:
+                                </h3>
                                 <p className="text-gray-600 mb-6">
                                     Enjoy a more engaging and transparent recruitment process with immediate feedback on your performance.
                                 </p>
-                                <h3 className="text-2xl font-bold text-gray-800 mb-4">For Recruiters:</h3>
+                                <ul className="space-y-3">
+                                    <li className="flex items-center text-gray-600">
+                                        <FaChartLine className="w-5 h-5 mr-2 text-green-500" />
+                                        Instant performance feedback
+                                    </li>
+                                    <li className="flex items-center text-gray-600">
+                                        <FaLightbulb className="w-5 h-5 mr-2 text-yellow-500" />
+                                        Insights into your strengths and areas for improvement
+                                    </li>
+                                    <li className="flex items-center text-gray-600">
+                                        <FaUsers className="w-5 h-5 mr-2 text-purple-500" />
+                                        Transparent and fair evaluation process
+                                    </li>
+                                </ul>
+                            </div>
+                            <div className="md:w-1/2 bg-white rounded-xl shadow-xl p-8">
+                                <h3 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                                    <FaUserTie className="text-blue-500 mr-2" />
+                                    For Recruiters:
+                                </h3>
                                 <p className="text-gray-600 mb-6">
                                     Access a comprehensive dashboard providing:
                                 </p>
                                 <ul className="space-y-3">
                                     <li className="flex items-center text-gray-600">
-                                        <svg className="w-6 h-6 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                        <FaChartLine className="w-5 h-5 mr-2 text-blue-500" />
                                         Real-time performance analytics
                                     </li>
                                     <li className="flex items-center text-gray-600">
-                                        <svg className="w-6 h-6 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                        <FaUsers className="w-5 h-5 mr-2 text-green-500" />
                                         Easy comparison of candidates
                                     </li>
                                     <li className="flex items-center text-gray-600">
-                                        <svg className="w-6 h-6 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                        <FaLightbulb className="w-5 h-5 mr-2 text-yellow-500" />
                                         Multi-dimensional candidate insights
                                     </li>
                                 </ul>
-                            </div>
-                            <div className="md:w-1/2 mt-8 md:mt-0">
-                                <Image src="/images/instant-results.svg" alt="Instant Results" width={500} height={300} className="rounded-lg shadow-lg" />
                             </div>
                         </div>
                     </div>

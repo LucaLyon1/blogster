@@ -177,7 +177,7 @@ async function main() {
         {
             title: 'Media Communication Management Fundamentals',
             description: 'Test knowledge of key concepts, strategies, and processes in media communication management for a TV company',
-            industry: 'Media',
+            industry: 'Other',
             questions: [
                 {
                     description: 'What is the primary role of a Communication Manager in a TV media company?',

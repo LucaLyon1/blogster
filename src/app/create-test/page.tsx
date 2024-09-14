@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { FaPlus, FaTrash } from 'react-icons/fa';
+import { IndustryFilter } from '@/components/IndustryFilter';
 
 interface Question {
     description: string;
@@ -19,7 +20,10 @@ interface TestTemplate {
     title: string;
     description: string;
     questions: Question[];
+    industry: string;
 }
+
+const ALL_INDUSTRIES = ['Finance', 'Technology', 'Design', 'Engineering', 'Other'];
 
 export default function CreateTest() {
     const [title, setTitle] = useState<string>("");
@@ -29,8 +33,7 @@ export default function CreateTest() {
     ]);
     const [templates, setTemplates] = useState<TestTemplate[]>([]);
     const [selectedTemplate, setSelectedTemplate] = useState<string>("");
-    const [industries, setIndustries] = useState<string[]>([]);
-    const [selectedIndustry, setSelectedIndustry] = useState<string>("");
+    const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
     const router = useRouter();
     const searchParams = useSearchParams();
     const { data: session } = useSession();
@@ -49,9 +52,6 @@ export default function CreateTest() {
             if (response.ok) {
                 const data = await response.json();
                 setTemplates(data);
-                // Extract unique industries from templates
-                const industries = [...new Set(data.map((template: TestTemplate) => template.industry))];
-                setIndustries(industries);
             } else {
                 console.error('Failed to fetch templates');
             }
@@ -91,6 +91,14 @@ export default function CreateTest() {
         setQuestions(newQuestions);
     };
 
+    const handleIndustryToggle = (industry: string) => {
+        setSelectedIndustries(prev =>
+            prev.includes(industry)
+                ? prev.filter(i => i !== industry)
+                : [...prev, industry]
+        );
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
@@ -118,22 +126,19 @@ export default function CreateTest() {
                 <h1 className="text-4xl font-bold text-gray-900 mb-8 text-center">Create a Test</h1>
                 <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg">
                     <div className="mb-8">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="industry">
-                            Select Industry
+                        <label className="block text-gray-700 text-sm font-bold mb-2">
+                            Select Industries
                         </label>
-                        <select
-                            id="industry"
-                            value={selectedIndustry}
-                            onChange={(e) => setSelectedIndustry(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="">All Industries</option>
-                            {industries.map((industry) => (
-                                <option key={industry} value={industry}>
-                                    {industry}
-                                </option>
+                        <div className="flex flex-wrap gap-2">
+                            {ALL_INDUSTRIES.map((industry) => (
+                                <IndustryFilter
+                                    key={industry}
+                                    industry={industry}
+                                    isSelected={selectedIndustries.includes(industry)}
+                                    onClick={() => handleIndustryToggle(industry)}
+                                />
                             ))}
-                        </select>
+                        </div>
                     </div>
                     <div className="mb-8">
                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="template">
@@ -147,7 +152,13 @@ export default function CreateTest() {
                         >
                             <option value="">Select a template</option>
                             {templates
-                                .filter((template) => !selectedIndustry || template.industry === selectedIndustry)
+                                .filter((template) => {
+                                    if (selectedIndustries.length === 0) return true;
+                                    if (selectedIndustries.includes('Other')) {
+                                        return !ALL_INDUSTRIES.slice(0, -1).includes(template.industry) || selectedIndustries.includes(template.industry);
+                                    }
+                                    return selectedIndustries.includes(template.industry);
+                                })
                                 .map((template) => (
                                     <option key={template.id} value={template.id}>
                                         {template.title}
