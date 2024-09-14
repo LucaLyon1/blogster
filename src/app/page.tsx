@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Roboto, Roboto_Slab } from 'next/font/google';
 import { LogInButton } from "@/components/AuthForm";
+import { FaSmile, FaUserFriends, FaChartBar } from 'react-icons/fa';
 
 const roboto = Roboto({
   weight: ['400', '700'],
@@ -83,10 +84,10 @@ export default function Home() {
                 />
               </div>
               <h3 className="text-xl font-semibold text-gray-800 mt-6 mb-4">Engaging Candidate Experience</h3>
-              <ul className="list-disc list-inside text-gray-600 space-y-2">
-                <li>Interactive and enjoyable skill assessments</li>
-                <li>User-friendly interface for seamless test-taking</li>
-                <li>Immediate feedback to keep candidates informed</li>
+              <ul className="space-y-2">
+                <li className="flex items-center"><FaSmile className="text-blue-500 mr-2" /> Interactive and enjoyable skill assessments</li>
+                <li className="flex items-center"><FaUserFriends className="text-blue-500 mr-2" /> User-friendly interface for seamless test-taking</li>
+                <li className="flex items-center"><FaChartBar className="text-blue-500 mr-2" /> Immediate feedback to keep candidates informed</li>
               </ul>
             </div>
             <div className="w-full md:w-1/2">
@@ -101,10 +102,10 @@ export default function Home() {
                 />
               </div>
               <h3 className="text-xl font-semibold text-gray-800 mt-6 mb-4">Powerful Recruiter Insights</h3>
-              <ul className="list-disc list-inside text-gray-600 space-y-2">
-                <li>Comprehensive dashboard for at-a-glance candidate evaluation</li>
-                <li>Multidimensional charts for in-depth skill analysis</li>
-                <li>Data-driven decision-making tools</li>
+              <ul className="space-y-2">
+                <li className="flex items-center"><FaChartBar className="text-blue-500 mr-2" /> Comprehensive dashboard for at-a-glance candidate evaluation</li>
+                <li className="flex items-center"><FaChartBar className="text-blue-500 mr-2" /> Multidimensional charts for in-depth skill analysis</li>
+                <li className="flex items-center"><FaChartBar className="text-blue-500 mr-2" /> Data-driven decision-making tools</li>
               </ul>
             </div>
           </div>

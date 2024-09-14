@@ -1,6 +1,7 @@
 export const ROLES = {
     FREE: 'free',
     PREMIUM: 'premium',
+    ENTERPRISE: 'enterprise',
     ADMIN: 'admin',
 } as const;
 
