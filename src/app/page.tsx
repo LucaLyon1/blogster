@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Roboto } from 'next/font/google';
+import Image from "next/image";
+import { Roboto, Roboto_Slab } from 'next/font/google';
 import { LogInButton } from "@/components/AuthForm";
 
 const roboto = Roboto({
@@ -8,22 +9,27 @@ const roboto = Roboto({
   display: 'swap',
 });
 
+const robotoSlab = Roboto_Slab({
+  weight: ['600'],
+  subsets: ['latin'],
+  display: 'swap',
+});
 
 export default function Home() {
   return (
     <div className={roboto.className}>
       {/* Hero Section */}
-      <section className="bg-blue-50 py-32">
+      <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-32">
         <div className="container mx-auto px-6 text-center">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">Hire Smarter, Faster, and More Accurately</h1>
-          <p className="text-gray-600 mb-8">
+          <h1 className={`${robotoSlab.className} text-5xl font-bold text-gray-800 mb-6`}>Hire Smarter, Faster, and More Accurately</h1>
+          <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
             Custom Skill Tests and Resume Access for Effortless Candidate Screening
           </p>
-          <div className="flex justify-center space-x-4">
-            <Link href="/learn-more" className="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 transition duration-300">
+          <div className="flex justify-center space-x-6">
+            <Link href="/learn-more" className="bg-blue-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-blue-700 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
               I am recruiting
             </Link>
-            <Link href="/job-board" className="bg-gray-500 text-white px-6 py-3 rounded hover:bg-gray-600 transition duration-300">
+            <Link href="/job-board" className="bg-white text-blue-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-100 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 border-2 border-blue-600">
               I am a candidate
             </Link>
           </div>
@@ -60,70 +66,57 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Sales Funnel Section */}
+      {/* Screenshots Section */}
       <section className="bg-gray-50 py-20">
         <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">Choose Your Plan</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-lg shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-blue-500 hover:border-2 flex flex-col h-full">
-              <div className="px-6 py-8 flex-grow">
-                <h3 className="text-2xl font-semibold text-gray-800 mb-2">Basic</h3>
-                <p className="text-4xl font-bold text-gray-800 mb-4">$49<span className="text-gray-600 text-base font-normal">/mo</span></p>
-                <ul className="text-sm text-gray-600 mb-6">
-                  <li className="mb-2">Three Job Offers at a time</li>
-                  <li className="mb-2">Dashboard reporting</li>
-                  <li className="mb-2">Email support</li>
-                  <li className="mb-2">Single user license</li>
-                </ul>
+          <h2 className={`${robotoSlab.className} text-3xl font-bold text-gray-800 mb-12 text-center`}>Experience finnnest in Action</h2>
+          <div className="flex flex-col md:flex-row items-center justify-between space-y-12 md:space-y-0 md:space-x-12">
+            <div className="w-full md:w-1/2">
+              <div className="aspect-w-3 aspect-h-2 mb-6">
+                <Image
+                  src="/test-question-screenshot.png"
+                  alt="Example of a fun test question"
+                  width={600}
+                  height={400}
+                  objectFit="cover"
+                  className="rounded-lg shadow-xl"
+                />
               </div>
-              <div className="px-6 pb-8">
-                <button className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">Choose Plan</button>
-              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mt-6 mb-4">Engaging Candidate Experience</h3>
+              <ul className="list-disc list-inside text-gray-600 space-y-2">
+                <li>Interactive and enjoyable skill assessments</li>
+                <li>User-friendly interface for seamless test-taking</li>
+                <li>Immediate feedback to keep candidates informed</li>
+              </ul>
             </div>
-            <div className="bg-white rounded-lg shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-blue-500 hover:border-2 flex flex-col h-full">
-              <div className="px-6 py-8 flex-grow">
-                <h3 className="text-2xl font-semibold text-gray-800 mb-2">Pro</h3>
-                <p className="text-4xl font-bold text-gray-800 mb-4">$89<span className="text-gray-600 text-base font-normal">/mo</span></p>
-                <ul className="text-sm text-gray-600 mb-6">
-                  <li className="mb-2">Ten job offers at a time</li>
-                  <li className="mb-2">Dashboard+ experience</li>
-                  <li className="mb-2">Email support</li>
-                  <li className="mb-2">3 recruiters profile</li>
-                </ul>
+            <div className="w-full md:w-1/2">
+              <div className="aspect-w-3 aspect-h-2 mb-6">
+                <Image
+                  src="/recruiter-dashboard-screenshot.png"
+                  alt="Recruiter dashboard with multidimensional chart"
+                  width={600}
+                  height={400}
+                  objectFit="cover"
+                  className="rounded-lg shadow-xl"
+                />
               </div>
-              <div className="px-6 pb-8">
-                <button className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">Choose Plan</button>
-              </div>
-            </div>
-            <div className="bg-white rounded-lg shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-blue-500 hover:border-2 flex flex-col h-full">
-              <div className="px-6 py-8 flex-grow">
-                <h3 className="text-2xl font-semibold text-gray-800 mb-2">Enterprise</h3>
-                <p className="text-4xl font-bold text-gray-800 mb-4">$139<span className="text-gray-600 text-base font-normal">/mo</span></p>
-                <ul className="text-sm text-gray-600 mb-6">
-                  <li className="mb-2">Unlimited job offers</li>
-                  <li className="mb-2">Dashboard+ experience</li>
-                  <li className="mb-2">Email support</li>
-                  <li className="mb-2">10 recruiters profile</li>
-                  <li className="mb-2">Premium visibility option</li>
-                  <li className="mb-2">Custom integration tools</li>
-                  <li className="mb-2">Priority support</li>
-                </ul>
-              </div>
-              <div className="px-6 pb-8">
-                <button className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">Choose Plan</button>
-              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mt-6 mb-4">Powerful Recruiter Insights</h3>
+              <ul className="list-disc list-inside text-gray-600 space-y-2">
+                <li>Comprehensive dashboard for at-a-glance candidate evaluation</li>
+                <li>Multidimensional charts for in-depth skill analysis</li>
+                <li>Data-driven decision-making tools</li>
+              </ul>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="bg-blue-50 py-20">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-8">Join Our Community</h2>
-          <p className="text-gray-600 mb-8">
-            Be a part of a growing community of professionals and employers. Connect, network, and grow together.
-          </p>
-          <LogInButton />
+      <section className="bg-gradient-to-br from-blue-500 to-indigo-600 py-20 text-white">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className={`${robotoSlab.className} text-3xl font-bold mb-6`}>Transform your recruitment strategy with <span className={robotoSlab.className}>finnnest.</span></h2>
+          <Link href="/learn-more" className="bg-white text-blue-600 hover:bg-blue-100 font-bold py-3 px-6 rounded-full text-lg transition duration-300">
+            Get Started Now
+          </Link>
         </div>
       </section>
     </div>

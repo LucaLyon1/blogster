@@ -125,39 +125,38 @@ export default function RecruiterOffers() {
             </div>
             <div className="space-y-6">
                 {filteredOffers.map((job) => (
-                    <Link href={`/recruiter/dashboard?jobOfferId=${job.id}`} key={job.id} className="m-4">
-                        <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 hover:border-blue-500 hover:scale-105 border-2">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h2 className="text-2xl font-bold text-gray-800 mb-2">{job.jobTitle}</h2>
-                                    <p className="text-lg text-blue-600 mb-2">{job.company}</p>
-                                    <p className="text-gray-600 mb-2">{job.location}</p>
-                                </div>
-                                <span className="text-sm text-gray-500">
-                                    Posted: {formatDate(job.createdAt)}
-                                </span>
+                    <div key={job.id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 border-2 border-gray-200">
+                        <div className="flex justify-between items-start mb-4">
+                            <div>
+                                <h2 className="text-2xl font-bold text-gray-800 mb-2">{job.jobTitle}</h2>
+                                <p className="text-lg text-blue-600 mb-2">{job.company}</p>
+                                <p className="text-gray-600 mb-2">{job.location}</p>
                             </div>
-                            <p className="text-gray-600 mb-4">{job.jobDescription.substring(0, 150)}...</p>
-                            <div className="flex flex-wrap gap-2 mb-4">
-                                <span className={`inline-block text-xs font-semibold px-2.5 py-0.5 rounded ${getJobTypeColor(job.jobType)}`}>
-                                    {job.jobType}
-                                </span>
-                                <span className={`inline-block text-xs font-semibold px-2.5 py-0.5 rounded ${getWorkLocationColor(job.workLocation)}`}>
-                                    {job.workLocation}
-                                </span>
-                                <span className="inline-block bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">
-                                    ${job.salaryLower.toLocaleString()} - ${job.salaryUpper.toLocaleString()}
-                                </span>
-                            </div>
-                            <div className="flex justify-end">
-                                <button
-                                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
-                                >
-                                    View Dashboard
-                                </button>
-                            </div>
+                            <span className="text-sm text-gray-500">
+                                Posted: {formatDate(job.createdAt)}
+                            </span>
                         </div>
-                    </Link>
+                        <p className="text-gray-600 mb-4">{job.jobDescription.substring(0, 150)}...</p>
+                        <div className="flex flex-wrap gap-2 mb-4">
+                            <span className={`inline-block text-xs font-semibold px-2.5 py-0.5 rounded ${getJobTypeColor(job.jobType)}`}>
+                                {job.jobType}
+                            </span>
+                            <span className={`inline-block text-xs font-semibold px-2.5 py-0.5 rounded ${getWorkLocationColor(job.workLocation)}`}>
+                                {job.workLocation}
+                            </span>
+                            <span className="inline-block bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+                                ${job.salaryLower.toLocaleString()} - ${job.salaryUpper.toLocaleString()}
+                            </span>
+                        </div>
+                        <div className="flex justify-end mt-4">
+                            <Link
+                                href={`/recruiter/dashboard?jobOfferId=${job.id}`}
+                                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
+                            >
+                                View Detailed Dashboard
+                            </Link>
+                        </div>
+                    </div>
                 ))}
             </div>
         </div>

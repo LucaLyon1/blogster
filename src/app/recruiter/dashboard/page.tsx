@@ -1,184 +1,235 @@
 'use client'
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+import { FaUsers, FaClock, FaTrophy, FaChartLine } from 'react-icons/fa';
 
-interface User {
-    id: string;
-    name: string;
-}
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 interface TestResult {
     id: string;
-    user: User;
+    user: {
+        id: string;
+        name: string;
+    };
     correctAnswers: number;
     totalQuestions: number;
-    score: number;
-    appliedAt: string;
     timeUsed: number;
+    appliedAt: string;
+}
+
+interface TestSummary {
+    averageScore: number;
+    averageTimeUsed: number;
+    scoreDistribution: { [key: string]: number };
+    timeDistribution: { [key: string]: number };
+    deciles: number[];
+    totalApplicants: number;
+}
+
+function StatCard({ icon, title, value, color }: { icon: React.ReactNode, title: string, value: string, color: string }) {
+    return (
+        <div className={`bg-white rounded-lg shadow-md p-6 flex items-center ${color}`}>
+            <div className="mr-4 text-3xl">{icon}</div>
+            <div>
+                <h3 className="text-lg font-semibold mb-1">{title}</h3>
+                <p className="text-2xl font-bold">{value}</p>
+            </div>
+        </div>
+    );
+}
+
+function getScoreColor(score: number): string {
+    if (score >= 90) return 'bg-green-500 text-white';
+    if (score >= 80) return 'bg-green-400 text-white';
+    if (score >= 70) return 'bg-yellow-500 text-white';
+    if (score >= 60) return 'bg-yellow-400 text-white';
+    return 'bg-red-500 text-white';
 }
 
 export default function RecruiterDashboard() {
     const [testResults, setTestResults] = useState<TestResult[]>([]);
-    const [sortBy, setSortBy] = useState<string>('score');
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-    const [minScore, setMinScore] = useState<number | undefined>(undefined);
-    const [maxScore, setMaxScore] = useState<number | undefined>(undefined);
-    const [minAppliedDate, setMinAppliedDate] = useState<string | undefined>(undefined);
-    const [maxAppliedDate, setMaxAppliedDate] = useState<string | undefined>(undefined);
-    const [minTimeUsed, setMinTimeUsed] = useState<number | undefined>(undefined);
-    const [maxTimeUsed, setMaxTimeUsed] = useState<number | undefined>(undefined);
-    const router = useRouter();
+    const [testSummary, setTestSummary] = useState<TestSummary | null>(null);
     const searchParams = useSearchParams();
-    const jobOfferId = searchParams.get("jobOfferId");
+    const jobOfferId = searchParams.get('jobOfferId');
 
     useEffect(() => {
-        fetchTestResults();
-    }, [jobOfferId, sortBy, sortOrder, minScore, maxScore, minAppliedDate, maxAppliedDate, minTimeUsed, maxTimeUsed]);
+        if (jobOfferId) {
+            fetchTestResults();
+            fetchTestSummary();
+        }
+    }, [jobOfferId]);
 
     const fetchTestResults = async () => {
-        if (!jobOfferId) return;
-
-        const queryParams = new URLSearchParams({
-            sortBy,
-            sortOrder,
-            ...(minScore !== undefined && { minScore: minScore.toString() }),
-            ...(maxScore !== undefined && { maxScore: maxScore.toString() }),
-            ...(minAppliedDate !== undefined && { minAppliedDate }),
-            ...(maxAppliedDate !== undefined && { maxAppliedDate }),
-            ...(minTimeUsed !== undefined && { minTimeUsed: minTimeUsed.toString() }),
-            ...(maxTimeUsed !== undefined && { maxTimeUsed: maxTimeUsed.toString() }),
-        });
-
         try {
-            const response = await fetch(`/api/recruiter/test-results/${jobOfferId}?${queryParams}`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch test results');
+            const response = await fetch(`/api/recruiter/test-results/${jobOfferId}`);
+            if (response.ok) {
+                const data = await response.json();
+                setTestResults(data);
+            } else {
+                console.error('Failed to fetch test results');
             }
-            const data: TestResult[] = await response.json();
-            setTestResults(data);
         } catch (error) {
             console.error('Error fetching test results:', error);
         }
     };
 
-    const handleSort = (field: string) => {
-        if (field === sortBy) {
-            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-        } else {
-            setSortBy(field);
-            setSortOrder('desc');
+    const fetchTestSummary = async () => {
+        try {
+            const response = await fetch(`/api/recruiter/test-summary/${jobOfferId}`);
+            if (response.ok) {
+                const data = await response.json();
+                setTestSummary(data);
+            } else {
+                console.error('Failed to fetch test summary');
+            }
+        } catch (error) {
+            console.error('Error fetching test summary:', error);
         }
     };
 
-    const getScoreColor = (score: number) => {
-        if (score >= 90) return 'bg-green-100';
-        if (score >= 70) return 'bg-yellow-100';
-        if (score >= 50) return 'bg-orange-100';
-        return 'bg-red-100';
+    const renderScoreDistributionChart = () => {
+        if (!testSummary) return null;
+
+        const data = {
+            labels: Object.keys(testSummary.scoreDistribution),
+            datasets: [
+                {
+                    label: 'Number of Applicants',
+                    data: Object.values(testSummary.scoreDistribution),
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                },
+            ],
+        };
+
+        const options = {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top' as const,
+                },
+                title: {
+                    display: true,
+                    text: 'Score Distribution',
+                },
+            },
+        };
+
+        return <Bar data={data} options={options} />;
+    };
+
+    const renderTimeDistributionChart = () => {
+        if (!testSummary) return null;
+
+        const data = {
+            labels: Object.keys(testSummary.timeDistribution),
+            datasets: [
+                {
+                    label: 'Number of Applicants',
+                    data: Object.values(testSummary.timeDistribution),
+                    backgroundColor: 'rgba(153, 102, 255, 0.6)',
+                },
+            ],
+        };
+
+        const options = {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top' as const,
+                },
+                title: {
+                    display: true,
+                    text: 'Time Distribution (seconds)',
+                },
+            },
+        };
+
+        return <Bar data={data} options={options} />;
     };
 
     return (
-        <div className="container mx-auto px-6 py-20">
-            <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Candidates' Scores</h1>
-            <div className="mb-4 flex flex-wrap justify-between items-center">
-                <div>
-                    <label className="mr-2">Min Score:</label>
-                    <input
-                        type="number"
-                        value={minScore || ''}
-                        onChange={(e) => setMinScore(e.target.value ? parseInt(e.target.value) : undefined)}
-                        className="border rounded px-2 py-1 w-20"
-                    />
-                    <label className="mx-2">Max Score:</label>
-                    <input
-                        type="number"
-                        value={maxScore || ''}
-                        onChange={(e) => setMaxScore(e.target.value ? parseInt(e.target.value) : undefined)}
-                        className="border rounded px-2 py-1 w-20"
-                    />
-                </div>
-                <div className="w-full md:w-1/2 lg:w-1/4 mb-4">
-                    <label className="block text-sm font-medium text-gray-700">Applied Date Range</label>
-                    <input
-                        type="date"
-                        value={minAppliedDate || ''}
-                        onChange={(e) => setMinAppliedDate(e.target.value || undefined)}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                    />
-                    <input
-                        type="date"
-                        value={maxAppliedDate || ''}
-                        onChange={(e) => setMaxAppliedDate(e.target.value || undefined)}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                    />
-                </div>
-                <div className="w-full md:w-1/2 lg:w-1/4 mb-4">
-                    <label className="block text-sm font-medium text-gray-700">Time Used Range (seconds)</label>
-                    <input
-                        type="number"
-                        value={minTimeUsed || ''}
-                        onChange={(e) => setMinTimeUsed(e.target.value ? parseInt(e.target.value) : undefined)}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                        placeholder="Min time"
-                    />
-                    <input
-                        type="number"
-                        value={maxTimeUsed || ''}
-                        onChange={(e) => setMaxTimeUsed(e.target.value ? parseInt(e.target.value) : undefined)}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                        placeholder="Max time"
-                    />
-                </div>
-                <button
-                    onClick={fetchTestResults}
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                    Apply Filters
-                </button>
+        <div className="container mx-auto px-4 py-8">
+            <div className="my-12">
+                <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Recruiter Dashboard</h1>
             </div>
-            <div className="bg-white p-6 rounded shadow-md">
-                <table className="min-w-full bg-white">
-                    <thead>
+
+            {testSummary && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <StatCard
+                        icon={<FaUsers className="text-blue-500" />}
+                        title="Total Applicants"
+                        value={testSummary.totalApplicants.toString()}
+                        color="text-blue-500"
+                    />
+                    <StatCard
+                        icon={<FaTrophy className="text-green-500" />}
+                        title="Average Score"
+                        value={`${testSummary.averageScore.toFixed(2)}%`}
+                        color="text-green-500"
+                    />
+                    <StatCard
+                        icon={<FaClock className="text-yellow-500" />}
+                        title="Average Time"
+                        value={`${(testSummary.averageTimeUsed / 60).toFixed(2)} min`}
+                        color="text-yellow-500"
+                    />
+                    <StatCard
+                        icon={<FaChartLine className="text-purple-500" />}
+                        title="Top 10% Score"
+                        value={`${testSummary.deciles[8].toFixed(2)}%`}
+                        color="text-purple-500"
+                    />
+                </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <h2 className="text-2xl font-semibold mb-4">Score Distribution</h2>
+                    {renderScoreDistributionChart()}
+                </div>
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <h2 className="text-2xl font-semibold mb-4">Time Distribution</h2>
+                    {renderTimeDistributionChart()}
+                </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+                <table className="w-full">
+                    <thead className="bg-gray-100">
                         <tr>
-                            <th className="py-2 border-b cursor-pointer" onClick={() => handleSort('user.name')}>
-                                Candidate {sortBy === 'user.name' && (sortOrder === 'asc' ? '↑' : '↓')}
-                            </th>
-                            <th className="py-2 border-b cursor-pointer" onClick={() => handleSort('correctAnswers')}>
-                                Correct Answers {sortBy === 'correctAnswers' && (sortOrder === 'asc' ? '↑' : '↓')}
-                            </th>
-                            <th className="py-2 border-b">Total Questions</th>
-                            <th className="py-2 border-b cursor-pointer" onClick={() => handleSort('score')}>
-                                Score {sortBy === 'score' && (sortOrder === 'asc' ? '↑' : '↓')}
-                            </th>
-                            <th className="py-2 border-b cursor-pointer" onClick={() => handleSort('appliedAt')}>
-                                Applied At {sortBy === 'appliedAt' && (sortOrder === 'asc' ? '↑' : '↓')}
-                            </th>
-                            <th className="py-2 border-b cursor-pointer" onClick={() => handleSort('timeUsed')}>
-                                Time Used (seconds) {sortBy === 'timeUsed' && (sortOrder === 'asc' ? '↑' : '↓')}
-                            </th>
+                            <th className="py-3 px-4 text-left">#</th>
+                            <th className="py-3 px-4 text-left">Name</th>
+                            <th className="py-3 px-4 text-left">Correct Answers</th>
+                            <th className="py-3 px-4 text-left">Total Questions</th>
+                            <th className="py-3 px-4 text-left">Score</th>
+                            <th className="py-3 px-4 text-left">Applied At</th>
+                            <th className="py-3 px-4 text-left">Time Used</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {testResults.map((result) => {
+                        {testResults.map((result, index) => {
                             const score = (result.correctAnswers / result.totalQuestions) * 100;
                             return (
-                                <tr key={result.id} className="hover:bg-gray-100 transition duration-300">
-                                    <td className="py-2 border-b text-center">
+                                <tr key={result.id} className={index % 2 === 0 ? 'bg-gray-50 hover:bg-gray-100' : 'bg-white hover:bg-gray-100'}>
+                                    <td className="py-3 px-4 border-b">{index + 1}</td>
+                                    <td className="py-3 px-4 border-b">
                                         <Link href={`/profile/${result.user.id}`} className="text-blue-600 hover:underline">
                                             {result.user.name}
                                         </Link>
                                     </td>
-                                    <td className="py-2 border-b text-center">{result.correctAnswers}</td>
-                                    <td className="py-2 border-b text-center">{result.totalQuestions}</td>
-                                    <td className="py-2 border-b text-center">
-                                        <div className={`inline-block px-2 py-1 rounded w-20 text-center ${getScoreColor(score)}`}>
+                                    <td className="py-3 px-4 border-b">{result.correctAnswers}</td>
+                                    <td className="py-3 px-4 border-b">{result.totalQuestions}</td>
+                                    <td className="py-3 px-4 border-b">
+                                        <span className={`px-2 py-1 rounded ${getScoreColor(score)}`}>
                                             {score.toFixed(2)}%
-                                        </div>
+                                        </span>
                                     </td>
-                                    <td className="py-2 border-b text-center">{new Date(result.appliedAt).toLocaleString()}</td>
-                                    <td className="py-2 border-b text-center">{result.timeUsed}</td>
+                                    <td className="py-3 px-4 border-b">{new Date(result.appliedAt).toLocaleString()}</td>
+                                    <td className="py-3 px-4 border-b">{(result.timeUsed / 60).toFixed(2)} min</td>
                                 </tr>
                             );
                         })}
