@@ -98,6 +98,7 @@ model JobOffer {
   userId         String
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
+  published      Boolean      @default(false)
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   Test           Test[]
   TestResult     TestResult[]

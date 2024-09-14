@@ -14,7 +14,8 @@ export async function POST(req: NextRequest) {
                 salaryUpper,
                 jobType,
                 workLocation,
-                userId
+                userId,
+                published: false
             },
         });
         return NextResponse.json(newJobOffer, { status: 201 });

@@ -28,14 +28,29 @@ export default function JobBoard() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const { data: session } = useSession();
+    const [filters, setFilters] = useState({
+        jobType: '',
+        workLocation: '',
+        salaryMin: 0,
+        salaryMax: 0,
+    });
 
     useEffect(() => {
         fetchJobOffers(currentPage);
-    }, [currentPage, session]);
+    }, [currentPage, session, filters, keywordSearch, locationSearch]);
 
     const fetchJobOffers = async (page: number) => {
         try {
-            const response = await fetch(`/api/job-offers?page=${page}&limit=10`);
+            const queryParams = new URLSearchParams({
+                page: page.toString(),
+                limit: '10',
+                keywordSearch,
+                locationSearch,
+                ...Object.fromEntries(
+                    Object.entries(filters).map(([key, value]) => [key, value?.toString()])
+                ),
+            });
+            const response = await fetch(`/api/job-offers?${queryParams}`);
             const data = await response.json();
             setJobOffers(data.jobOffers);
             setFilteredJobs(data.jobOffers);
@@ -54,45 +69,15 @@ export default function JobBoard() {
         }
     };
 
-    const handleFilter = (filters: any) => {
-        let filtered = jobOffers;
-
-        if (filters.jobType) {
-            filtered = filtered.filter(job => job.jobType === filters.jobType);
-        }
-        if (filters.workLocation) {
-            filtered = filtered.filter(job => job.workLocation === filters.workLocation);
-        }
-        if (filters.salaryMin) {
-            filtered = filtered.filter(job => job.salaryLower >= filters.salaryMin);
-        }
-        if (filters.salaryMax) {
-            filtered = filtered.filter(job => job.salaryUpper <= filters.salaryMax);
-        }
-
-        setFilteredJobs(filtered);
+    const handleFilter = (newFilters: any) => {
+        setFilters(newFilters);
+        setCurrentPage(1);
+        fetchJobOffers(1);
     };
 
     const handleSearch = () => {
-        let filtered = jobOffers;
-
-        if (keywordSearch) {
-            const keywordLower = keywordSearch.toLowerCase();
-            filtered = filtered.filter(job =>
-                job.jobTitle.toLowerCase().includes(keywordLower) ||
-                job.company.toLowerCase().includes(keywordLower) ||
-                job.jobDescription.toLowerCase().includes(keywordLower)
-            );
-        }
-
-        if (locationSearch) {
-            const locationLower = locationSearch.toLowerCase();
-            filtered = filtered.filter(job =>
-                job.location.toLowerCase().includes(locationLower)
-            );
-        }
-
-        setFilteredJobs(filtered);
+        setCurrentPage(1);
+        fetchJobOffers(1);
     };
 
     const getJobTypeColor = (jobType: string) => {
@@ -133,6 +118,7 @@ export default function JobBoard() {
 
     const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage);
+        fetchJobOffers(newPage);
     };
 
     return (
@@ -222,8 +208,8 @@ export default function JobBoard() {
                                 key={page}
                                 onClick={() => handlePageChange(page)}
                                 className={`mx-1 px-3 py-1 rounded ${currentPage === page
-                                        ? 'bg-blue-500 text-white'
-                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                    ? 'bg-blue-500 text-white'
+                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                     }`}
                             >
                                 {page}

@@ -34,10 +34,15 @@ export async function POST(req: NextRequest) {
                 },
             },
         });
+
+        // Update the job offer's published field
+        await prisma.jobOffer.update({
+            where: { id: jobOfferId },
+            data: { published: true },
+        });
+
         return NextResponse.json(newTest, { status: 201 });
     } catch (error) {
-        console.log(error);
-        console.log('_______________________');
         return NextResponse.json({ error: 'Error creating test' }, { status: 500 });
     }
 }
