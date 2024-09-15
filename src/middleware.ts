@@ -12,22 +12,22 @@ export async function middleware(request: NextRequest) {
     }
 
     // Check for premium routes
-    if (request.nextUrl.pathname.startsWith('/premium') && !hasRole(session?.user, ROLES.PREMIUM)) {
+    if (request.nextUrl.pathname.startsWith('/premium') && !hasRole(session?.user ? session.user : { role: ROLES.PREMIUM }, ROLES.PREMIUM)) {
         return NextResponse.redirect(new URL('/upgrade', request.url));
     }
 
     // Check for enterprise routes
-    if (request.nextUrl.pathname.startsWith('/enterprise') && !hasRole(session?.user, ROLES.ENTERPRISE)) {
+    if (request.nextUrl.pathname.startsWith('/enterprise') && !hasRole(session?.user ? session.user : { role: ROLES.ENTERPRISE }, ROLES.ENTERPRISE)) {
         return NextResponse.redirect(new URL('/upgrade', request.url));
     }
 
     // Check for admin routes
-    if (request.nextUrl.pathname.startsWith('/admin') && !hasRole(session?.user, ROLES.ADMIN)) {
+    if (request.nextUrl.pathname.startsWith('/admin') && !hasRole(session?.user ? session.user : { role: ROLES.ADMIN }, ROLES.ADMIN)) {
         return NextResponse.redirect(new URL('/', request.url));
     }
 
     // Redirect free users to upgrade page when trying to create a job offer
-    if (request.nextUrl.pathname === '/create-offer' && hasRole(session?.user, ROLES.FREE)) {
+    if (request.nextUrl.pathname === '/create-offer' && hasRole(session?.user ? session.user : { role: ROLES.FREE }, ROLES.FREE)) {
         return NextResponse.redirect(new URL('/upgrade', request.url));
     }
 

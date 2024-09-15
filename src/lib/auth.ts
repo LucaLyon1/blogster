@@ -5,6 +5,7 @@ import Google from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import { decode, encode } from "next-auth/jwt"
+import { DefaultSession } from "next-auth"
 
 export const { auth, handlers } = NextAuth({
     adapter: PrismaAdapter(prisma),
@@ -34,7 +35,14 @@ export const { auth, handlers } = NextAuth({
                 if (!isPasswordValid) {
                     return null;
                 }
-                return user; // Remove the await user.json() and just return the user object
+
+                return {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    image: user.image,
+                    role: user.role
+                };
             }
         })
     ],
@@ -42,13 +50,13 @@ export const { auth, handlers } = NextAuth({
         async session({ session, token }) {
             if (token.id && token.role) {
                 session.user.id = token.id as string;
-                session.user.role = token.role as string;
+                session.user.role = token.role;
             }
             return session;
         },
         async jwt({ token, user }) {
             if (user) {
-                token.id = user.id;
+                token.id = user.id as string;
                 token.role = user.role;
             }
             return token;

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from 'next/link';
 import { JobFilter } from '@/components/JobFilter';
 import { FaSearch, FaMapMarkerAlt } from 'react-icons/fa';
@@ -24,10 +24,8 @@ export default function JobBoard() {
     const [filteredJobs, setFilteredJobs] = useState<JobOffer[]>([]);
     const [keywordSearch, setKeywordSearch] = useState('');
     const [locationSearch, setLocationSearch] = useState('');
-    const [applicationStatus, setApplicationStatus] = useState<{ [key: string]: boolean }>({});
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const { data: session } = useSession();
     const [filters, setFilters] = useState({
         jobType: '',
         workLocation: '',
@@ -35,11 +33,7 @@ export default function JobBoard() {
         salaryMax: 0,
     });
 
-    useEffect(() => {
-        fetchJobOffers(currentPage);
-    }, [currentPage, fetchJobOffers]);
-
-    async function fetchJobOffers(page: number) {
+    const fetchJobOffers = useCallback(async (page: number) => {
         try {
             const queryParams = new URLSearchParams({
                 page: page.toString(),
@@ -55,19 +49,14 @@ export default function JobBoard() {
             setJobOffers(data.jobOffers);
             setFilteredJobs(data.jobOffers);
             setTotalPages(data.totalPages);
-
-            if (session?.user?.id) {
-                const statuses = await Promise.all(data.jobOffers.map(async (job: JobOffer) => {
-                    const res = await fetch(`/api/check-test?jobOfferId=${job.id}&userId=${session?.user?.id}`);
-                    const { taken } = await res.json();
-                    return [job.id, taken];
-                }));
-                setApplicationStatus(Object.fromEntries(statuses));
-            }
         } catch (error) {
             console.error('Error fetching job offers:', error);
         }
-    };
+    }, [keywordSearch, locationSearch, filters]);
+
+    useEffect(() => {
+        fetchJobOffers(currentPage);
+    }, [currentPage, fetchJobOffers]);
 
     const handleFilter = (newFilters: any) => {
         setFilters(newFilters);
@@ -190,13 +179,9 @@ export default function JobBoard() {
                                 <p className="text-gray-700 text-sm mb-4">{job.jobDescription.substring(0, 100)}...</p>
                                 <div className="flex justify-end">
                                     <button
-                                        className={`py-1 px-3 rounded-md text-white font-semibold text-sm transition-all duration-200 ${applicationStatus[job.id]
-                                            ? 'bg-gray-500 cursor-not-allowed'
-                                            : 'bg-blue-500 hover:bg-blue-600 hover:shadow-md'
-                                            }`}
-                                        disabled={applicationStatus[job.id]}
+                                        className={`py-1 px-3 rounded-md text-white font-semibold text-sm transition-all duration-200 bg-blue-500 hover:bg-blue-600 hover:shadow-md`}
                                     >
-                                        {applicationStatus[job.id] ? 'Already Applied' : 'Apply Now'}
+                                        Apply Now
                                     </button>
                                 </div>
                             </div>
