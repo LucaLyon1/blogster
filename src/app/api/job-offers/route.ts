@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
@@ -14,7 +15,7 @@ export async function GET(req: NextRequest) {
     const skip = (page - 1) * limit;
 
     try {
-        const where = {
+        const where: Prisma.JobOfferWhereInput = {
             published: true,
             ...(keywordSearch && {
                 OR: [
