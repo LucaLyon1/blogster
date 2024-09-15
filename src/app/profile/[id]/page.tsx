@@ -6,9 +6,14 @@ import ProfileView from '@/components/ProfileView';
 import ProfileForm from '@/components/ProfileForm';
 import { useParams } from 'next/navigation';
 
+interface ProfileData {
+    name: string;
+    // Add other profile properties here
+}
+
 export default function ProfilePage() {
     const [isEditing, setIsEditing] = useState(false);
-    const [profileData, setProfileData] = useState(null);
+    const [profileData, setProfileData] = useState<ProfileData | null>(null);
     const { data: session } = useSession();
     const params = useParams();
     const profileId = params.id as string;
@@ -53,13 +58,13 @@ export default function ProfilePage() {
             </h1>
             {isEditing ? (
                 <ProfileForm
-                    initialData={profileData}
+                    initialData={profileData as any}
                     onSave={handleSave}
                     onCancel={handleCancel}
                 />
             ) : (
                 <ProfileView
-                    profileData={profileData}
+                    profileData={profileData as any}
                     onEdit={isOwnProfile ? handleEdit : undefined}
                 />
             )}
