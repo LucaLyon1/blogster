@@ -37,9 +37,9 @@ export default function JobBoard() {
 
     useEffect(() => {
         fetchJobOffers(currentPage);
-    }, [currentPage, session, filters, keywordSearch, locationSearch]);
+    }, [currentPage, fetchJobOffers]);
 
-    const fetchJobOffers = async (page: number) => {
+    async function fetchJobOffers(page: number) {
         try {
             const queryParams = new URLSearchParams({
                 page: page.toString(),

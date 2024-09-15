@@ -62,9 +62,9 @@ export default function RecruiterDashboard() {
             fetchTestResults();
             fetchTestSummary();
         }
-    }, [jobOfferId]);
+    }, [jobOfferId, fetchTestResults, fetchTestSummary]);
 
-    const fetchTestResults = async () => {
+    async function fetchTestResults() {
         try {
             const response = await fetch(`/api/recruiter/test-results/${jobOfferId}`);
             if (response.ok) {
@@ -78,7 +78,7 @@ export default function RecruiterDashboard() {
         }
     };
 
-    const fetchTestSummary = async () => {
+    async function fetchTestSummary() {
         try {
             const response = await fetch(`/api/recruiter/test-summary/${jobOfferId}`);
             if (response.ok) {

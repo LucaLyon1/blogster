@@ -23,7 +23,7 @@ export default function LearnMore() {
                     <div className="container mx-auto px-4">
                         <h1 className="text-5xl font-bold text-center text-gray-800 mb-8">Welcome to <span className={`${robotoSlab.className} text-blue-600`}>finnnest.</span></h1>
                         <p className="text-xl text-gray-600 text-center mb-16 max-w-3xl mx-auto">
-                            Revolutionizing recruitment by putting skills at the forefront. We're transforming the hiring process with comprehensive testing and instant insights for both candidates and recruiters.
+                            Revolutionizing recruitment by putting skills at the forefront. We&apos;re transforming the hiring process with comprehensive testing and instant insights for both candidates and recruiters.
                         </p>
                     </div>
                 </section>

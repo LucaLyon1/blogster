@@ -93,7 +93,7 @@ export function LogInButton() {
                     </div>
                     <div className="mt-4 text-center">
                         <Link href={`/register?callbackUrl=${encodeURIComponent(callbackUrl)}`} className="text-sm text-gray-500 hover:text-blue-500 hover:underline transition-colors duration-300">
-                            Don't have an account? Register
+                            Don&apos;t have an account? Register
                         </Link>
                     </div>
                 </div>
