@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
                     connect: { id: userId }
                 },
                 questions: {
-                    create: questions.map((q) => ({
+                    create: questions.map((q: any) => ({
                         description: q.description,
                         answer1: q.answer1,
                         answer2: q.answer2,
