@@ -26,7 +26,7 @@ export default function ProfilePage() {
 
     const handleEdit = () => setIsEditing(true);
     const handleCancel = () => setIsEditing(false);
-    const handleSave = async (updatedData) => {
+    const handleSave = async (updatedData: any) => {
         const response = await fetch(`/api/profile/${profileId}`, {
             method: 'PUT',
             headers: {

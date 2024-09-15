@@ -71,7 +71,6 @@ export const JobFilter = ({ onFilter }: FilterProps) => {
                     step={1000}
                     value={salaryRange}
                     onChange={(value: number | number[]) => setSalaryRange(value as number[])}
-                    tipFormatter={formatSalary}
                 />
                 <div className="flex justify-between mt-2 text-sm text-gray-600">
                     <span>{formatSalary(salaryRange[0])}</span>
