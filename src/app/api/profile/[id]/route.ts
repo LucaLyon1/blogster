@@ -40,7 +40,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
             data: {
                 description,
                 currentJobTitle,
-                jobHistory: jobHistory ? JSON.stringify(jobHistory) : null,
+                jobHistory: jobHistory ? JSON.stringify(jobHistory) : undefined,
                 email,
                 phoneNumber,
             },
