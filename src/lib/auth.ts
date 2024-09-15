@@ -63,7 +63,7 @@ export const { auth, handlers } = NextAuth({
 export async function registerUser(name: string, email: string, password: string) {
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-        throw new Error('Email already in use');
+        throw new Error('Email already in use.');
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
