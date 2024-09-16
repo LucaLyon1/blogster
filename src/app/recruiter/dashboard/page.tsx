@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { FaUsers, FaClock, FaTrophy, FaChartLine } from 'react-icons/fa';
 import BackButton from "@/components/BackButton";
+import { Suspense } from 'react';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -57,14 +58,7 @@ export default function RecruiterDashboard() {
     const searchParams = useSearchParams();
     const jobOfferId = searchParams.get('jobOfferId');
 
-    useEffect(() => {
-        if (jobOfferId) {
-            fetchTestResults();
-            fetchTestSummary();
-        }
-    }, [jobOfferId, fetchTestResults, fetchTestSummary]);
-
-    async function fetchTestResults() {
+    const fetchTestResults = useCallback(async () => {
         try {
             const response = await fetch(`/api/recruiter/test-results/${jobOfferId}`);
             if (response.ok) {
@@ -76,9 +70,9 @@ export default function RecruiterDashboard() {
         } catch (error) {
             console.error('Error fetching test results:', error);
         }
-    };
+    }, [jobOfferId]);
 
-    async function fetchTestSummary() {
+    const fetchTestSummary = useCallback(async () => {
         try {
             const response = await fetch(`/api/recruiter/test-summary/${jobOfferId}`);
             if (response.ok) {
@@ -90,7 +84,14 @@ export default function RecruiterDashboard() {
         } catch (error) {
             console.error('Error fetching test summary:', error);
         }
-    };
+    }, [jobOfferId]);
+
+    useEffect(() => {
+        if (jobOfferId) {
+            fetchTestResults();
+            fetchTestSummary();
+        }
+    }, [jobOfferId, fetchTestResults, fetchTestSummary]);
 
     const renderScoreDistributionChart = () => {
         if (!testSummary) return null;
@@ -153,91 +154,93 @@ export default function RecruiterDashboard() {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <BackButton />
-            <div className="my-12">
-                <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Recruiter Dashboard</h1>
-            </div>
-
-            {testSummary && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <StatCard
-                        icon={<FaUsers className="text-blue-500" />}
-                        title="Total Applicants"
-                        value={testSummary.totalApplicants.toString()}
-                        color="text-blue-500"
-                    />
-                    <StatCard
-                        icon={<FaTrophy className="text-green-500" />}
-                        title="Average Score"
-                        value={`${testSummary.averageScore.toFixed(2)}%`}
-                        color="text-green-500"
-                    />
-                    <StatCard
-                        icon={<FaClock className="text-yellow-500" />}
-                        title="Average Time"
-                        value={`${(testSummary.averageTimeUsed / 60).toFixed(2)} min`}
-                        color="text-yellow-500"
-                    />
-                    <StatCard
-                        icon={<FaChartLine className="text-purple-500" />}
-                        title="Top 10% Score"
-                        value={`${testSummary.deciles[8].toFixed(2)}%`}
-                        color="text-purple-500"
-                    />
+        <Suspense fallback={<div>Loading...</div>}>
+            <div className="container mx-auto px-4 py-8 mt-16">
+                <BackButton />
+                <div className="my-12">
+                    <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Recruiter Dashboard</h1>
                 </div>
-            )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-2xl font-semibold mb-4">Score Distribution</h2>
-                    {renderScoreDistributionChart()}
+                {testSummary && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <StatCard
+                            icon={<FaUsers className="text-blue-500" />}
+                            title="Total Applicants"
+                            value={testSummary.totalApplicants.toString()}
+                            color="text-blue-500"
+                        />
+                        <StatCard
+                            icon={<FaTrophy className="text-green-500" />}
+                            title="Average Score"
+                            value={`${testSummary.averageScore.toFixed(2)}%`}
+                            color="text-green-500"
+                        />
+                        <StatCard
+                            icon={<FaClock className="text-yellow-500" />}
+                            title="Average Time"
+                            value={`${(testSummary.averageTimeUsed / 60).toFixed(2)} min`}
+                            color="text-yellow-500"
+                        />
+                        <StatCard
+                            icon={<FaChartLine className="text-purple-500" />}
+                            title="Top 10% Score"
+                            value={`${testSummary.deciles[8].toFixed(2)}%`}
+                            color="text-purple-500"
+                        />
+                    </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div className="bg-white p-6 rounded-lg shadow-md">
+                        <h2 className="text-2xl font-semibold mb-4">Score Distribution</h2>
+                        {renderScoreDistributionChart()}
+                    </div>
+                    <div className="bg-white p-6 rounded-lg shadow-md">
+                        <h2 className="text-2xl font-semibold mb-4">Time Distribution</h2>
+                        {renderTimeDistributionChart()}
+                    </div>
                 </div>
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-2xl font-semibold mb-4">Time Distribution</h2>
-                    {renderTimeDistributionChart()}
+
+                <div className="bg-white rounded-lg shadow-md overflow-hidden">
+                    <table className="w-full">
+                        <thead className="bg-gray-100">
+                            <tr>
+                                <th className="py-3 px-4 text-left">#</th>
+                                <th className="py-3 px-4 text-left">Name</th>
+                                <th className="py-3 px-4 text-left">Correct Answers</th>
+                                <th className="py-3 px-4 text-left">Total Questions</th>
+                                <th className="py-3 px-4 text-left">Score</th>
+                                <th className="py-3 px-4 text-left">Applied At</th>
+                                <th className="py-3 px-4 text-left">Time Used</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {testResults.map((result, index) => {
+                                const score = (result.correctAnswers / result.totalQuestions) * 100;
+                                return (
+                                    <tr key={result.id} className={index % 2 === 0 ? 'bg-gray-50 hover:bg-gray-100' : 'bg-white hover:bg-gray-100'}>
+                                        <td className="py-3 px-4 border-b">{index + 1}</td>
+                                        <td className="py-3 px-4 border-b">
+                                            <Link href={`/profile/${result.user.id}`} className="text-blue-600 hover:underline">
+                                                {result.user.name}
+                                            </Link>
+                                        </td>
+                                        <td className="py-3 px-4 border-b">{result.correctAnswers}</td>
+                                        <td className="py-3 px-4 border-b">{result.totalQuestions}</td>
+                                        <td className="py-3 px-4 border-b">
+                                            <span className={`px-2 py-1 rounded ${getScoreColor(score)}`}>
+                                                {score.toFixed(2)}%
+                                            </span>
+                                        </td>
+                                        <td className="py-3 px-4 border-b">{new Date(result.appliedAt).toLocaleString()}</td>
+                                        <td className="py-3 px-4 border-b">{(result.timeUsed / 60).toFixed(2)} min</td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                <table className="w-full">
-                    <thead className="bg-gray-100">
-                        <tr>
-                            <th className="py-3 px-4 text-left">#</th>
-                            <th className="py-3 px-4 text-left">Name</th>
-                            <th className="py-3 px-4 text-left">Correct Answers</th>
-                            <th className="py-3 px-4 text-left">Total Questions</th>
-                            <th className="py-3 px-4 text-left">Score</th>
-                            <th className="py-3 px-4 text-left">Applied At</th>
-                            <th className="py-3 px-4 text-left">Time Used</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {testResults.map((result, index) => {
-                            const score = (result.correctAnswers / result.totalQuestions) * 100;
-                            return (
-                                <tr key={result.id} className={index % 2 === 0 ? 'bg-gray-50 hover:bg-gray-100' : 'bg-white hover:bg-gray-100'}>
-                                    <td className="py-3 px-4 border-b">{index + 1}</td>
-                                    <td className="py-3 px-4 border-b">
-                                        <Link href={`/profile/${result.user.id}`} className="text-blue-600 hover:underline">
-                                            {result.user.name}
-                                        </Link>
-                                    </td>
-                                    <td className="py-3 px-4 border-b">{result.correctAnswers}</td>
-                                    <td className="py-3 px-4 border-b">{result.totalQuestions}</td>
-                                    <td className="py-3 px-4 border-b">
-                                        <span className={`px-2 py-1 rounded ${getScoreColor(score)}`}>
-                                            {score.toFixed(2)}%
-                                        </span>
-                                    </td>
-                                    <td className="py-3 px-4 border-b">{new Date(result.appliedAt).toLocaleString()}</td>
-                                    <td className="py-3 px-4 border-b">{(result.timeUsed / 60).toFixed(2)} min</td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        </Suspense>
     );
 }

@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import { LogOutButton } from './AuthForm';
 import { Roboto_Slab } from 'next/font/google';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
 export const robotoSlab = Roboto_Slab({
     subsets: ['latin'],
@@ -18,7 +19,7 @@ export default function Navbar() {
     const searchParams = useSearchParams();
 
     return (
-        <div className='py-8'>
+        <Suspense fallback={<div>Loading...</div>}>
             <nav className="fixed top-0 w-full bg-white border-b border-gray-200 shadow-sm flex justify-between items-center py-4 px-6 md:px-12 lg:px-20">
                 {/* Logo */}
                 <Link href="/" className="flex-shrink-0">
@@ -70,7 +71,7 @@ export default function Navbar() {
                     </svg>
                 </button>
             </nav>
-        </div>
+        </Suspense>
     );
 };
 
