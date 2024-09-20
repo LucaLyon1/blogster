@@ -150,7 +150,7 @@ export default function JobBoard() {
                     <JobFilter onFilter={handleFilter} />
                 </div>
                 <div className="w-full md:w-3/4 md:pl-8">
-                    {filteredJobs.map((job) => (
+                    {jobOffers && jobOffers.map((job) => (
                         <Link key={job.id} href={`/job-board/${job.id}`}>
                             <div className="bg-white p-6 rounded-lg shadow-md mb-4 hover:shadow-lg hover:border-blue-500 hover:border-2 hover:scale-105 transition-all duration-200 ease-in-out">
                                 <div className="flex justify-between items-start mb-2">

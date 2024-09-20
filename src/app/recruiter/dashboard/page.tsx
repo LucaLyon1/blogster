@@ -222,7 +222,7 @@ function RecruiterDashboardContent() {
                         </tr>
                     </thead>
                     <tbody>
-                        {testResults.map((result, index) => {
+                        {testResults?.map((result, index) => {
                             const score = (result.correctAnswers / result.totalQuestions) * 100;
                             return (
                                 <tr key={result.id} className={index % 2 === 0 ? 'bg-gray-50 hover:bg-gray-100' : 'bg-white hover:bg-gray-100'}>

@@ -124,33 +124,33 @@ export default function RecruiterOffers() {
                 </button>
             </div>
             <div className="space-y-6">
-                {filteredOffers.map((job) => (
-                    <div key={job.id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 border-2 border-gray-200">
+                {jobOffers && jobOffers.map((offer) => (
+                    <div key={offer.id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 border-2 border-gray-200">
                         <div className="flex justify-between items-start mb-4">
                             <div>
-                                <h2 className="text-2xl font-bold text-gray-800 mb-2">{job.jobTitle}</h2>
-                                <p className="text-lg text-blue-600 mb-2">{job.company}</p>
-                                <p className="text-gray-600 mb-2">{job.location}</p>
+                                <h2 className="text-2xl font-bold text-gray-800 mb-2">{offer.jobTitle}</h2>
+                                <p className="text-lg text-blue-600 mb-2">{offer.company}</p>
+                                <p className="text-gray-600 mb-2">{offer.location}</p>
                             </div>
                             <span className="text-sm text-gray-500">
-                                Posted: {formatDate(job.createdAt)}
+                                Posted: {formatDate(offer.createdAt)}
                             </span>
                         </div>
-                        <p className="text-gray-600 mb-4">{job.jobDescription.substring(0, 150)}...</p>
+                        <p className="text-gray-600 mb-4">{offer.jobDescription.substring(0, 150)}...</p>
                         <div className="flex flex-wrap gap-2 mb-4">
-                            <span className={`inline-block text-xs font-semibold px-2.5 py-0.5 rounded ${getJobTypeColor(job.jobType)}`}>
-                                {job.jobType}
+                            <span className={`inline-block text-xs font-semibold px-2.5 py-0.5 rounded ${getJobTypeColor(offer.jobType)}`}>
+                                {offer.jobType}
                             </span>
-                            <span className={`inline-block text-xs font-semibold px-2.5 py-0.5 rounded ${getWorkLocationColor(job.workLocation)}`}>
-                                {job.workLocation}
+                            <span className={`inline-block text-xs font-semibold px-2.5 py-0.5 rounded ${getWorkLocationColor(offer.workLocation)}`}>
+                                {offer.workLocation}
                             </span>
                             <span className="inline-block bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">
-                                ${job.salaryLower.toLocaleString()} - ${job.salaryUpper.toLocaleString()}
+                                ${offer.salaryLower.toLocaleString()} - ${offer.salaryUpper.toLocaleString()}
                             </span>
                         </div>
                         <div className="flex justify-end mt-4">
                             <Link
-                                href={`/recruiter/dashboard?jobOfferId=${job.id}`}
+                                href={`/recruiter/dashboard?jobOfferId=${offer.id}`}
                                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
                             >
                                 View Detailed Dashboard
