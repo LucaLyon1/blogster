@@ -1,8 +1,17 @@
 "use client"
 
 import { FaCheck, FaStar, FaCrown } from 'react-icons/fa';
+import { Suspense } from 'react';
 
 export default function UpgradePage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <UpgradePageContent />
+        </Suspense>
+    );
+}
+
+function UpgradePageContent() {
     const handleUpgrade = (plan: string) => {
         // TODO: Implement upgrade logic
         console.log(`Upgrading to ${plan} plan`);
