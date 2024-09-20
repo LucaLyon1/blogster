@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
@@ -10,7 +10,12 @@ export function RegisterForm() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [callbackUrl, setCallbackUrl] = useState('');
     const router = useRouter();
+
+    useEffect(() => {
+        setCallbackUrl(encodeURIComponent(window.location.pathname + window.location.search));
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -104,7 +109,7 @@ export function RegisterForm() {
                         </div>
                     </div>
                     <div className="mt-4 text-center">
-                        <Link href={`/login?callbackUrl=${encodeURIComponent(window.location.pathname + window.location.search)}`} className="text-sm text-gray-500 hover:text-blue-500 hover:underline transition-colors duration-300">
+                        <Link href={`/login?callbackUrl=${callbackUrl}`} className="text-sm text-gray-500 hover:text-blue-500 hover:underline transition-colors duration-300">
                             Already registered? Log In
                         </Link>
                     </div>

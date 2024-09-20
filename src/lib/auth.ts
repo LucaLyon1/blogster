@@ -5,7 +5,6 @@ import Google from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import { decode, encode } from "next-auth/jwt"
-import { DefaultSession } from "next-auth"
 
 export const { auth, handlers } = NextAuth({
     adapter: PrismaAdapter(prisma),
