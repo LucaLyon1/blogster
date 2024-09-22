@@ -38,7 +38,7 @@ export default function ProfileView({ profileData, onEdit }: ProfileViewProps) {
             <div className="relative px-6 py-4">
                 <div className="absolute -top-16 left-6">
                     <Image
-                        src={profileData.image || '/default-avatar.png'}
+                        src={profileData.image || '/default-avatar.jpg'}
                         alt={profileData.name}
                         width={128}
                         height={128}
