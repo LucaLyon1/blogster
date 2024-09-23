@@ -5,6 +5,7 @@ import Google from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import { decode, encode } from "next-auth/jwt"
+import { stripe } from "./stripe"
 
 export const { auth, handlers } = NextAuth({
     adapter: PrismaAdapter(prisma),
@@ -65,6 +66,27 @@ export const { auth, handlers } = NextAuth({
         signIn: '/login',
     },
     debug: false, // Enable debug mode
+    events: {
+        createUser: async ({ user }) => {
+            if (!user.id || !user.email) {
+                console.error('User ID or email is missing');
+                return;
+            }
+            try {
+                const customer = await stripe.customers.create({
+                    email: user.email,
+                    name: user.name ?? undefined,
+                });
+
+                await prisma.user.update({
+                    where: { id: user.id },
+                    data: { stripeCustomerId: customer.id }
+                });
+            } catch (error) {
+                console.error('Error creating Stripe customer or updating user:', error);
+            }
+        }
+    }
 })
 
 export async function registerUser(name: string, email: string, password: string) {
@@ -81,6 +103,22 @@ export async function registerUser(name: string, email: string, password: string
             password: hashedPassword,
         },
     });
+    if (!newUser.id || !newUser.email) {
+        console.error('User ID or email is missing');
+        return;
+    }
+    try {
+        const customer = await stripe.customers.create({
+            email: newUser.email,
+            name: newUser.name ?? undefined,
+        });
 
+        await prisma.user.update({
+            where: { id: newUser.id },
+            data: { stripeCustomerId: customer.id }
+        });
+    } catch (error) {
+        console.error('Error creating Stripe customer or updating user:', error);
+    }
     return newUser;
 }
