@@ -22,7 +22,8 @@ async function main() {
             workLocation: 'On-site',
             userId: user.id,
             published: true,
-            Test: {  // Changed from 'test' to 'Test'
+            compensationType: 'yearly',
+            Test: {
                 create: {
                     title: 'Investment Banking Fundamentals',
                     userId: user.id,
@@ -60,6 +61,7 @@ async function main() {
             workLocation: 'Hybrid',
             userId: user.id,
             published: true,
+            compensationType: 'yearly',
             Test: {  // Changed from 'test' to 'Test'
                 create: {
                     title: 'M&A Process and Valuation',
@@ -98,6 +100,7 @@ async function main() {
             workLocation: 'Remote',
             userId: user.id,
             published: true,
+            compensationType: 'yearly',
             Test: {  // Changed from 'test' to 'Test'
                 create: {
                     title: 'Financial Consulting Basics',
@@ -136,6 +139,7 @@ async function main() {
             workLocation: 'On-site',
             userId: user.id,
             published: true,
+            compensationType: 'yearly',
             Test: {  // Changed from 'test' to 'Test'
                 create: {
                     title: 'Equity Research Fundamentals',
@@ -174,6 +178,7 @@ async function main() {
             workLocation: 'Hybrid',
             userId: user.id,
             published: true,
+            compensationType: 'yearly',
             Test: {  // Changed from 'test' to 'Test'
                 create: {
                     title: 'Financial Risk Management',
@@ -212,6 +217,7 @@ async function main() {
             workLocation: 'On-site',
             userId: user.id,
             published: true,
+            compensationType: 'yearly',
             Test: {  // Changed from 'test' to 'Test'
                 create: {
                     title: 'Quantitative Finance Fundamentals',
@@ -250,6 +256,7 @@ async function main() {
             workLocation: 'On-site',
             userId: user.id,
             published: true,
+            compensationType: 'yearly',
             Test: {  // Changed from 'test' to 'Test'
                 create: {
                     title: 'Private Equity Fundamentals',
@@ -288,6 +295,7 @@ async function main() {
             workLocation: 'Hybrid',
             userId: user.id,
             published: true,
+            compensationType: 'yearly',
             Test: {  // Changed from 'test' to 'Test'
                 create: {
                     title: 'Hedge Fund Strategies',
@@ -326,6 +334,7 @@ async function main() {
             workLocation: 'On-site',
             userId: user.id,
             published: true,
+            compensationType: 'yearly',
             Test: {  // Changed from 'test' to 'Test'
                 create: {
                     title: 'Corporate Finance Principles',
@@ -364,6 +373,7 @@ async function main() {
             workLocation: 'Hybrid',
             userId: user.id,
             published: true,
+            compensationType: 'yearly',
             Test: {  // Changed from 'test' to 'Test'
                 create: {
                     title: 'Financial Compliance',
@@ -402,6 +412,7 @@ async function main() {
             workLocation: 'Hybrid',
             userId: user.id,
             published: true,
+            compensationType: 'yearly',
             Test: {  // Changed from 'test' to 'Test'
                 create: {
                     title: 'Financial Data Science',
@@ -444,7 +455,8 @@ async function main() {
                 workLocation: jobOffer.workLocation,
                 userId: jobOffer.userId,
                 published: jobOffer.published,
-                Test: {  // Changed from 'test' to 'Test'
+                compensationType: jobOffer.compensationType,
+                Test: {
                     create: {
                         title: jobOffer.Test.create.title,
                         userId: jobOffer.Test.create.userId,
