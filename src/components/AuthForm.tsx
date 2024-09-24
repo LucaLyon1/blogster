@@ -30,6 +30,7 @@ function LogInContent() {
             email,
             password,
         });
+        console.log(result)
         if (result?.error) {
             alert(result.error);
         } else if (result?.ok) {

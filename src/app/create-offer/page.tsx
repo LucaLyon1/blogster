@@ -15,6 +15,7 @@ export default function CreateOffer() {
     const [salaryUpper, setSalaryUpper] = useState<number>(0);
     const [jobType, setJobType] = useState<string>("");
     const [workLocation, setWorkLocation] = useState<string>("");
+    const [compensationType, setCompensationType] = useState<string>("yearly");
 
     const router = useRouter();
     const { data: session, status } = useSession();
@@ -42,6 +43,7 @@ export default function CreateOffer() {
                     salaryUpper,
                     jobType,
                     workLocation,
+                    compensationType,
                     userId: session?.user?.id,
                 }),
             });
@@ -160,7 +162,23 @@ export default function CreateOffer() {
                             <h2 className="text-2xl font-semibold text-gray-700">Compensation</h2>
                             <hr className="border-gray-300" />
                             <div className="flex space-x-4">
-                                <div className="w-1/2">
+                                <div className="w-1/3">
+                                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="compensationType">
+                                        <FaDollarSign className="inline-block mr-2" />Compensation Type
+                                    </label>
+                                    <select
+                                        id="compensationType"
+                                        value={compensationType}
+                                        onChange={(e) => setCompensationType(e.target.value)}
+                                        className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        required
+                                    >
+                                        <option value="hourly">Hourly</option>
+                                        <option value="monthly">Monthly</option>
+                                        <option value="yearly">Yearly</option>
+                                    </select>
+                                </div>
+                                <div className="w-1/3">
                                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="salaryLower">
                                         <FaDollarSign className="inline-block mr-2" />Salary Range (Lower)
                                     </label>
@@ -173,7 +191,7 @@ export default function CreateOffer() {
                                         required
                                     />
                                 </div>
-                                <div className="w-1/2">
+                                <div className="w-1/3">
                                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="salaryUpper">
                                         <FaDollarSign className="inline-block mr-2" />Salary Range (Upper)
                                     </label>

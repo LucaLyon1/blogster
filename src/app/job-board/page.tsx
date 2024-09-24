@@ -17,6 +17,7 @@ interface JobOffer {
     workLocation: string;
     createdAt: string;
     jobDescription: string;
+    compensationType: string;
 }
 
 export default function JobBoard() {
@@ -31,6 +32,7 @@ export default function JobBoard() {
         workLocation: '',
         salaryMin: 0,
         salaryMax: 0,
+        compensationType: '',
     });
 
     const fetchJobOffers = useCallback(async (page: number) => {
@@ -170,7 +172,7 @@ export default function JobBoard() {
                                         {job.workLocation}
                                     </span>
                                     <span className="inline-block bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">
-                                        ${job.salaryLower.toLocaleString()} - ${job.salaryUpper.toLocaleString()}
+                                        ${job.salaryLower.toLocaleString()} - ${job.salaryUpper.toLocaleString()} ({job.compensationType})
                                     </span>
                                     <span className={`inline-block text-xs font-semibold px-2.5 py-0.5 rounded ${getJobTypeColor(job.jobType)}`}>
                                         {job.jobType}

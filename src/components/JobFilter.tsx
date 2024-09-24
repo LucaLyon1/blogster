@@ -10,6 +10,7 @@ export const JobFilter = ({ onFilter }: FilterProps) => {
     const [jobType, setJobType] = useState('');
     const [workLocation, setWorkLocation] = useState('');
     const [salaryRange, setSalaryRange] = useState([0, 100000]);
+    const [compensationType, setCompensationType] = useState('');
 
     const handleFilter = () => {
         onFilter({
@@ -17,6 +18,7 @@ export const JobFilter = ({ onFilter }: FilterProps) => {
             workLocation,
             salaryMin: salaryRange[0],
             salaryMax: salaryRange[1] === 100000 ? null : salaryRange[1],
+            compensationType,
         });
     };
 
@@ -76,6 +78,22 @@ export const JobFilter = ({ onFilter }: FilterProps) => {
                     <span>{formatSalary(salaryRange[0])}</span>
                     <span>{formatSalary(salaryRange[1])}</span>
                 </div>
+            </div>
+            <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="compensationType">
+                    Compensation Type
+                </label>
+                <select
+                    id="compensationType"
+                    value={compensationType}
+                    onChange={(e) => setCompensationType(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-md"
+                >
+                    <option value="">All</option>
+                    <option value="hourly">Hourly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="yearly">Yearly</option>
+                </select>
             </div>
             <button
                 onClick={handleFilter}

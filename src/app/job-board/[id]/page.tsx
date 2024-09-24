@@ -19,6 +19,7 @@ interface JobOffer {
     workLocation: string;
     createdAt: string;
     jobDescription: string;
+    compensationType: string;
 }
 
 export default function JobDetails() {
@@ -77,7 +78,9 @@ export default function JobDetails() {
                         <span className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold mr-2 px-2.5 py-0.5 rounded">
                             Salary Range
                         </span>
-                        <p className="text-gray-700 mt-1">${jobOffer.salaryLower.toLocaleString()} - ${jobOffer.salaryUpper.toLocaleString()}</p>
+                        <p className="text-gray-700 mt-1">
+                            ${jobOffer.salaryLower.toLocaleString()} - ${jobOffer.salaryUpper.toLocaleString()} ({jobOffer.compensationType})
+                        </p>
                     </div>
                     <div>
                         <span className="inline-block bg-red-100 text-red-800 text-sm font-semibold mr-2 px-2.5 py-0.5 rounded">

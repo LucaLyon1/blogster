@@ -87,22 +87,23 @@ model Authenticator {
 
 // New JobOffer model
 model JobOffer {
-  id             String       @id @default(cuid())
-  jobTitle       String
-  jobDescription String
-  company        String
-  location       String
-  salaryLower    Int
-  salaryUpper    Int
-  jobType        String
-  workLocation   String
-  userId         String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  published      Boolean      @default(false)
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Test           Test[]
-  TestResult     TestResult[]
+  id               String       @id @default(cuid())
+  jobTitle         String
+  jobDescription   String
+  company          String
+  location         String
+  salaryLower      Int
+  salaryUpper      Int
+  jobType          String
+  workLocation     String
+  userId           String
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  published        Boolean      @default(false)
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Test             Test[]
+  TestResult       TestResult[]
+  compensationType String
 }
 
 model Test {

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(req: NextRequest) {
-    const { jobTitle, jobDescription, company, location, salaryLower, salaryUpper, jobType, workLocation, userId } = await req.json();
+    const { jobTitle, jobDescription, company, location, salaryLower, salaryUpper, jobType, workLocation, userId, compensationType } = await req.json();
     try {
         const newJobOffer = await prisma.jobOffer.create({
             data: {
@@ -15,7 +15,8 @@ export async function POST(req: NextRequest) {
                 jobType,
                 workLocation,
                 userId,
-                published: false
+                published: false,
+                compensationType,
             },
         });
         return NextResponse.json(newJobOffer, { status: 201 });
