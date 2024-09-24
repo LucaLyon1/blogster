@@ -1,34 +1,36 @@
-import { NextApiRequest, NextApiResponse, } from "next/types";
+import { NextRequest, NextResponse } from 'next/server';
+import Stripe from 'stripe';
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method === 'POST') {
-        const { priceId } = req.body;
-        try {
-            // Create Checkout Sessions from body params.
-            const session = await stripe.checkout.sessions.create({
-                line_items: [
-                    {
-                        price: priceId,
-                        quantity: 1,
-                    },
-                ],
-                mode: 'payment',
-                success_url: `${req.headers.origin}/?success=true`,
-                cancel_url: `${req.headers.origin}/?canceled=true`,
-                automatic_tax: { enabled: true },
-            });
-            res.redirect(303, session.url);
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                res.status(500).json({ error: err.message });
-            } else {
-                res.status(500).json({ error: 'An unknown error occurred' });
-            }
+export async function POST(req: NextRequest) {
+    try {
+        const { priceId } = await req.json();
+
+        // Create Checkout Sessions from body params.
+        const session = await stripe.checkout.sessions.create({
+            line_items: [
+                {
+                    price: priceId,
+                    quantity: 1,
+                },
+            ],
+            mode: 'payment',
+            success_url: `${req.headers.get('origin')}/?success=true`,
+            cancel_url: `${req.headers.get('origin')}/?canceled=true`,
+            automatic_tax: { enabled: true },
+        });
+
+        return NextResponse.redirect(session.url!, 303);
+    } catch (err) {
+        if (err instanceof Error) {
+            return NextResponse.json({ error: err.message }, { status: 500 });
+        } else {
+            return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
         }
-    } else {
-        res.setHeader('Allow', 'POST');
-        res.status(405).end('Method Not Allowed');
     }
+}
+
+export async function GET() {
+    return NextResponse.json({ error: 'Method Not Allowed' }, { status: 405 });
 }
