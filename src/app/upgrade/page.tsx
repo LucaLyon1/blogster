@@ -1,7 +1,6 @@
-"use client"
-
 import { FaCheck, FaStar, FaCrown } from 'react-icons/fa';
 import { Suspense } from 'react';
+import BuyButton from '@/components/BuyButton';
 
 export default function UpgradePage() {
     return (
@@ -12,10 +11,7 @@ export default function UpgradePage() {
 }
 
 function UpgradePageContent() {
-    const handleUpgrade = (plan: string) => {
-        // TODO: Implement upgrade logic
-        console.log(`Upgrading to ${plan} plan`);
-    };
+
 
     return (
         <div className="bg-gray-100 min-h-screen">
@@ -51,12 +47,8 @@ function UpgradePageContent() {
                                 <li className="flex items-center"><FaStar className="text-yellow-500 mr-2" /> Client support</li>
                             </ul>
                         </div>
-                        <button
-                            onClick={() => handleUpgrade('premium')}
-                            className="mt-4 w-full bg-yellow-500 text-white py-2 rounded-md hover:bg-yellow-600 transition-colors duration-300"
-                        >
-                            Upgrade to Premium
-                        </button>
+
+                        <BuyButton />
                     </div>
 
                     {/* Enterprise Plan */}
@@ -73,7 +65,6 @@ function UpgradePageContent() {
                             </ul>
                         </div>
                         <button
-                            onClick={() => handleUpgrade('enterprise')}
                             className="mt-4 w-full bg-purple-500 text-white py-2 rounded-md hover:bg-purple-600 transition-colors duration-300"
                         >
                             Upgrade to Enterprise
