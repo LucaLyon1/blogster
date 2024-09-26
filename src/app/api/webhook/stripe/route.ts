@@ -1,18 +1,21 @@
 import { NextRequest } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
+import { stripe } from "@/lib/stripe";
 
 export const POST = async (req: NextRequest) => {
     const body = await req.json() as Stripe.Event;
     switch (body.type) {
         case 'checkout.session.completed': {
             const checkoutSession = body.data.object as Stripe.Checkout.Session;
+            const subscription = checkoutSession.metadata?.subscription;
+            console.log(subscription)
             const user = await findUser(checkoutSession.customer);
             if (user) {
                 await prisma.user.update({
                     where: { id: user.id },
                     data: {
-                        role: 'premium'
+                        role: subscription
                     }
                 });
             }
@@ -21,12 +24,13 @@ export const POST = async (req: NextRequest) => {
         }
         case 'invoice.paid': {
             const invoice = body.data.object as Stripe.Invoice;
+            const subscription = invoice.metadata?.subscription;
             const user = await findUser(invoice.customer);
             if (user) {
                 await prisma.user.update({
                     where: { id: user.id },
                     data: {
-                        role: 'premium'
+                        role: subscription
                     }
                 });
             }

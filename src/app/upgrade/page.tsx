@@ -48,7 +48,7 @@ function UpgradePageContent() {
                             </ul>
                         </div>
 
-                        <BuyButton />
+                        <BuyButton subscription="premium" />
                     </div>
 
                     {/* Enterprise Plan */}
@@ -64,11 +64,7 @@ function UpgradePageContent() {
                                 <li className="flex items-center"><FaCrown className="text-purple-500 mr-2" /> Multidimensional analysis</li>
                             </ul>
                         </div>
-                        <button
-                            className="mt-4 w-full bg-purple-500 text-white py-2 rounded-md hover:bg-purple-600 transition-colors duration-300"
-                        >
-                            Upgrade to Enterprise
-                        </button>
+                        <BuyButton subscription="enterprise" />
                     </div>
                 </div>
             </div>
