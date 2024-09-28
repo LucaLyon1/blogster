@@ -30,6 +30,8 @@ export default function BuyButton({ subscription }: { subscription: string }) {
 
             const stripeCustomerId = user?.stripeCustomerId ?? undefined;
 
+            const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+
             const stripeSession = await stripe.checkout.sessions.create({
                 customer: stripeCustomerId,
                 mode: 'subscription',
@@ -38,8 +40,8 @@ export default function BuyButton({ subscription }: { subscription: string }) {
                     price: priceId,
                     quantity: 1
                 }],
-                success_url: 'http://localhost:3000/create-offer',
-                cancel_url: 'http://localhost:3000/error',
+                success_url: `${baseUrl}/create-offer`,
+                cancel_url: `${baseUrl}/error`,
                 metadata: { subscription: subscription }
             });
             if (stripeSession.url) {
