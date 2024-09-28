@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import { redirect } from "next/navigation";
 import { FaRocket, FaArrowRight } from 'react-icons/fa';
+import { prisma } from "@/lib/prisma";
 
 export default function BuyButton({ subscription }: { subscription: string }) {
     let priceId: string;
@@ -22,7 +23,7 @@ export default function BuyButton({ subscription }: { subscription: string }) {
         <form action={async () => {
             'use server'
             const session = await auth();
-            const user = await prisma?.user.findUnique({
+            const user = await prisma.user.findUnique({
                 where: { id: session?.user?.id },
                 select: { stripeCustomerId: true }
             });
