@@ -11,24 +11,32 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL(`/login?callbackUrl=${callbackUrl}`, request.url));
     }
 
-    // Check for premium routes
-    if (request.nextUrl.pathname.startsWith('/premium') && !hasRole(session?.user ? session.user : { role: ROLES.PREMIUM }, ROLES.PREMIUM)) {
-        return NextResponse.redirect(new URL('/upgrade', request.url));
+    const user = session.user;
+    const isAdmin = user?.role && hasRole({ role: user.role }, ROLES.ADMIN);
+    const isPremiumOrAbove = user?.role && (hasRole({ role: user.role }, ROLES.PREMIUM) || hasRole({ role: user.role }, ROLES.ENTERPRISE) || isAdmin);
+
+    // Check for recruiter routes
+    if (request.nextUrl.pathname.startsWith('/recruiter')) {
+        if (!isPremiumOrAbove) {
+            return NextResponse.redirect(new URL('/upgrade', request.url));
+        }
+
+        // Check if the user is the creator of the offer or an admin
+        const offerId = request.nextUrl.searchParams.get('jobOfferId');
+        if (offerId && !isAdmin) {
+            const res = await fetch(`http://localhost:3000/api/job-offers/${offerId}`);
+            const offer = await res.json();
+            if (offer && offer.userId !== user.id) {
+                return NextResponse.redirect(new URL('/', request.url));
+            }
+        }
     }
 
-    // Check for enterprise routes
-    if (request.nextUrl.pathname.startsWith('/enterprise') && !hasRole(session?.user ? session.user : { role: ROLES.ENTERPRISE }, ROLES.ENTERPRISE)) {
-        return NextResponse.redirect(new URL('/upgrade', request.url));
-    }
-
-    // Check for admin routes
-    if (request.nextUrl.pathname.startsWith('/admin') && !hasRole(session?.user ? session.user : { role: ROLES.ADMIN }, ROLES.ADMIN)) {
-        return NextResponse.redirect(new URL('/', request.url));
-    }
-
-    // Redirect free users to upgrade page when trying to create a job offer
-    if (request.nextUrl.pathname === '/create-offer' && hasRole(session?.user ? session.user : { role: ROLES.FREE }, ROLES.FREE)) {
-        return NextResponse.redirect(new URL('/upgrade', request.url));
+    // Check for create-offer and create-test routes
+    if (request.nextUrl.pathname.startsWith('/create-offer') || request.nextUrl.pathname.startsWith('/create-test')) {
+        if (!isPremiumOrAbove) {
+            return NextResponse.redirect(new URL('/upgrade', request.url));
+        }
     }
 
     return NextResponse.next();
@@ -36,12 +44,9 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
     matcher: [
-        '/dashboard/:path*',
+        '/recruiter/:path*',
         '/create-offer/:path*',
         '/create-test/:path*',
-        '/take-test',
-        '/premium/:path*',
-        '/enterprise/:path*',
-        '/admin/:path*',
+        '/take-test/:path*',
     ],
 };

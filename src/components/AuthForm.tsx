@@ -23,22 +23,34 @@ function LogInContent() {
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl') || '/';
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const result = await signIn('credentials', {
-            redirect: false,
-            email,
-            password,
-        });
-        console.log(result)
-        if (result?.error) {
-            alert(result.error);
-        } else if (result?.ok) {
-            // You might want to force a session refresh here
-            await getSession();
-            router.push(callbackUrl);
-        } else {
-            console.error("Unexpected SignIn result:", result);
+        setIsLoading(true);
+        try {
+            const result = await signIn('credentials', {
+                redirect: false,
+                email,
+                password,
+            });
+            if (result?.error) {
+                alert(result.error);
+                return;
+            }
+
+            const session = await getSession();
+            if (session) {
+                // Use window.location for a hard redirect
+                window.location.href = callbackUrl;
+            } else {
+                alert("Failed to log in. Please try again.");
+            }
+        } catch (error) {
+            console.error("Login error:", error);
+            alert("An error occurred during login. Please try again.");
+        } finally {
+            setIsLoading(false);
         }
     };
 

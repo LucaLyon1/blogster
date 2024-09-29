@@ -158,16 +158,51 @@ function TakeTestContent() {
 
     if (grade) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <div className="flex justify-center h-screen bg-gradient-to-b from-blue-100 to-blue-200">
                 <div className="container mx-auto px-4 py-8">
-                    <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Test Completed</h1>
-                    <div className="bg-white p-6 rounded shadow-md text-center">
-                        <p className="text-gray-600 mb-4">You answered {grade.correctAnswers} out of {grade.totalQuestions} questions correctly.</p>
+                    <h1 className="text-4xl font-bold text-blue-800 mb-8 text-center">Test Completed</h1>
+                    <div className="bg-white p-8 rounded-lg shadow-lg text-center">
+                        <div className="text-6xl mb-6">🎉</div>
+                        <h2 className="text-2xl font-semibold text-blue-600 mb-4">Congratulations!</h2>
+                        <p className="text-gray-700 mb-6 text-lg">
+                            You answered <span className="font-bold text-green-500">{grade.correctAnswers}</span> out of <span className="font-bold">{grade.totalQuestions}</span> questions correctly.
+                        </p>
+                        <div className="flex justify-center items-center mb-8">
+                            <div className="w-64 h-64 relative">
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="text-4xl font-bold text-blue-500">
+                                        {Math.round((grade.correctAnswers / grade.totalQuestions) * 100)}%
+                                    </div>
+                                </div>
+                                <svg className="w-full h-full" viewBox="0 0 36 36">
+                                    <path
+                                        d="M18 2.0845
+                                        a 15.9155 15.9155 0 0 1 0 31.831
+                                        a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none"
+                                        stroke="#E5E7EB"
+                                        strokeWidth="3"
+                                    />
+                                    <path
+                                        d="M18 2.0845
+                                        a 15.9155 15.9155 0 0 1 0 31.831
+                                        a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none"
+                                        stroke="#3B82F6"
+                                        strokeWidth="3"
+                                        strokeDasharray={`${(grade.correctAnswers / grade.totalQuestions) * 100}, 100`}
+                                    />
+                                </svg>
+                            </div>
+                        </div>
                         <button
                             onClick={() => router.push("/job-board")}
-                            className="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 transition duration-300"
+                            className="bg-blue-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-blue-600 transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center mx-auto"
                         >
-                            Back to Job Board
+                            <span className="mr-2">Back to Job Board</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
                         </button>
                     </div>
                 </div>

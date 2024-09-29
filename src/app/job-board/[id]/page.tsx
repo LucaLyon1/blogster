@@ -57,8 +57,10 @@ export default function JobDetails() {
         <div className="container mx-auto px-4 py-8">
             <div className="bg-white p-8 rounded-lg shadow-lg">
                 <BackButton />
-                <h1 className="text-4xl font-bold text-gray-800 mb-2">{jobOffer.jobTitle}</h1>
-                <p className="text-2xl text-blue-600 mb-4">{jobOffer.company}</p>
+                <div className="block">
+                    <h1 className="text-4xl font-bold text-gray-800 mb-2">{jobOffer.jobTitle}</h1>
+                    <p className="text-2xl text-blue-600 mb-4">{jobOffer.company}</p>
+                </div>
                 <hr className="my-6 border-t border-gray-200" />
 
                 <div className="grid grid-cols-2 gap-4 mb-6">

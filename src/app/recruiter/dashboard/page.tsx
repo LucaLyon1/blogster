@@ -3,13 +3,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { Bar } from 'react-chartjs-2';
-import { FaUsers, FaClock, FaTrophy, FaChartLine } from 'react-icons/fa';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, PointElement, LineElement } from 'chart.js';
+import { Bar, Scatter } from 'react-chartjs-2';
+import { FaUsers, FaClock, FaTrophy, FaChartLine, FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import BackButton from "@/components/BackButton";
 import { Suspense } from 'react';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend);
 
 interface TestResult {
     id: string;
@@ -65,6 +65,8 @@ function RecruiterDashboardContent() {
     const [testSummary, setTestSummary] = useState<TestSummary | null>(null);
     const searchParams = useSearchParams();
     const jobOfferId = searchParams.get('jobOfferId');
+    const [sortColumn, setSortColumn] = useState<string>('score');
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
     const fetchTestResults = useCallback(async () => {
         try {
@@ -101,6 +103,7 @@ function RecruiterDashboardContent() {
         }
     }, [jobOfferId, fetchTestResults, fetchTestSummary]);
 
+
     const renderScoreDistributionChart = () => {
         if (!testSummary) return null;
 
@@ -131,16 +134,18 @@ function RecruiterDashboardContent() {
         return <Bar data={data} options={options} />;
     };
 
-    const renderTimeDistributionChart = () => {
-        if (!testSummary) return null;
+    const renderPerformanceVsTimeChart = () => {
+        if (!testResults) return null;
 
         const data = {
-            labels: Object.keys(testSummary.timeDistribution),
             datasets: [
                 {
-                    label: 'Number of Applicants',
-                    data: Object.values(testSummary.timeDistribution),
-                    backgroundColor: 'rgba(153, 102, 255, 0.6)',
+                    label: 'Performance vs Time',
+                    data: testResults.map(result => ({
+                        x: result.timeUsed,
+                        y: (result.correctAnswers / result.totalQuestions) * 100
+                    })),
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
                 },
             ],
         };
@@ -153,20 +158,89 @@ function RecruiterDashboardContent() {
                 },
                 title: {
                     display: true,
-                    text: 'Time Distribution (seconds)',
+                    text: 'Performance vs Time',
                 },
             },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Time Used (seconds)'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Score (%)'
+                    },
+                    min: 0,
+                    max: 100
+                }
+            }
         };
 
-        return <Bar data={data} options={options} />;
+        return <Scatter data={data} options={options} />;
+    };
+
+    const handleSort = (column: string) => {
+        if (sortColumn === column) {
+            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortColumn(column);
+            setSortDirection('desc');
+        }
+
+        const sortedResults = [...testResults].sort((a, b) => {
+            let valueA, valueB;
+
+            switch (column) {
+                case 'name':
+                    valueA = a.user.name.toLowerCase();
+                    valueB = b.user.name.toLowerCase();
+                    break;
+                case 'correctAnswers':
+                    valueA = a.correctAnswers;
+                    valueB = b.correctAnswers;
+                    break;
+                case 'totalQuestions':
+                    valueA = a.totalQuestions;
+                    valueB = b.totalQuestions;
+                    break;
+                case 'score':
+                    valueA = (a.correctAnswers / a.totalQuestions) * 100;
+                    valueB = (b.correctAnswers / b.totalQuestions) * 100;
+                    break;
+                case 'appliedAt':
+                    valueA = new Date(a.appliedAt).getTime();
+                    valueB = new Date(b.appliedAt).getTime();
+                    break;
+                case 'timeUsed':
+                    valueA = a.timeUsed;
+                    valueB = b.timeUsed;
+                    break;
+                default:
+                    return 0;
+            }
+
+            if (valueA < valueB) return sortDirection === 'asc' ? -1 : 1;
+            if (valueA > valueB) return sortDirection === 'asc' ? 1 : -1;
+            return 0;
+        });
+
+        setTestResults(sortedResults);
+    };
+
+    const renderSortIcon = (column: string) => {
+        if (sortColumn !== column) {
+            return <FaSort className="inline ml-1" />;
+        }
+        return sortDirection === 'asc' ? <FaSortUp className="inline ml-1" /> : <FaSortDown className="inline ml-1" />;
     };
 
     return (
-        <div className="container mx-auto px-4 py-8 mt-16">
+        <div className="container mx-auto px-4 py-8">
             <BackButton />
-            <div className="my-12">
-                <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Recruiter Dashboard</h1>
-            </div>
+            <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Recruiter Dashboard</h1>
 
             {testSummary && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -203,8 +277,8 @@ function RecruiterDashboardContent() {
                     {renderScoreDistributionChart()}
                 </div>
                 <div className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-2xl font-semibold mb-4">Time Distribution</h2>
-                    {renderTimeDistributionChart()}
+                    <h2 className="text-2xl font-semibold mb-4">Performance vs Time</h2>
+                    {renderPerformanceVsTimeChart()}
                 </div>
             </div>
 
@@ -213,12 +287,24 @@ function RecruiterDashboardContent() {
                     <thead className="bg-gray-100">
                         <tr>
                             <th className="py-3 px-4 text-left">#</th>
-                            <th className="py-3 px-4 text-left">Name</th>
-                            <th className="py-3 px-4 text-left">Correct Answers</th>
-                            <th className="py-3 px-4 text-left">Total Questions</th>
-                            <th className="py-3 px-4 text-left">Score</th>
-                            <th className="py-3 px-4 text-left">Applied At</th>
-                            <th className="py-3 px-4 text-left">Time Used</th>
+                            <th className="py-3 px-4 text-left cursor-pointer" onClick={() => handleSort('name')}>
+                                Name {renderSortIcon('name')}
+                            </th>
+                            <th className="py-3 px-4 text-left cursor-pointer" onClick={() => handleSort('correctAnswers')}>
+                                Correct Answers {renderSortIcon('correctAnswers')}
+                            </th>
+                            <th className="py-3 px-4 text-left cursor-pointer" onClick={() => handleSort('totalQuestions')}>
+                                Total Questions {renderSortIcon('totalQuestions')}
+                            </th>
+                            <th className="py-3 px-4 text-left cursor-pointer" onClick={() => handleSort('score')}>
+                                Score {renderSortIcon('score')}
+                            </th>
+                            <th className="py-3 px-4 text-left cursor-pointer" onClick={() => handleSort('appliedAt')}>
+                                Applied At {renderSortIcon('appliedAt')}
+                            </th>
+                            <th className="py-3 px-4 text-left cursor-pointer" onClick={() => handleSort('timeUsed')}>
+                                Time Used {renderSortIcon('timeUsed')}
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -240,7 +326,7 @@ function RecruiterDashboardContent() {
                                         </span>
                                     </td>
                                     <td className="py-3 px-4 border-b">{new Date(result.appliedAt).toLocaleString()}</td>
-                                    <td className="py-3 px-4 border-b">{(result.timeUsed / 60).toFixed(2)} min</td>
+                                    <td className="py-3 px-4 border-b">{Math.floor(result.timeUsed / 60)}:{(result.timeUsed % 60).toString().padStart(2, '0')}</td>
                                 </tr>
                             );
                         })}
