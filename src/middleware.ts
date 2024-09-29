@@ -24,10 +24,22 @@ export async function middleware(request: NextRequest) {
         // Check if the user is the creator of the offer or an admin
         const offerId = request.nextUrl.searchParams.get('jobOfferId');
         if (offerId && !isAdmin) {
-            const res = await fetch(`http://localhost:3000/api/job-offers/${offerId}`);
-            const offer = await res.json();
-            if (offer && offer.userId !== user.id) {
-                return NextResponse.redirect(new URL('/', request.url));
+            try {
+                const res = await fetch(`${process.env.NEXTAUTH_URL}/api/job-offers/${offerId}`, {
+                    headers: {
+                        'Cookie': request.headers.get('cookie') || '',
+                    },
+                });
+                if (!res.ok) {
+                    throw new Error('Failed to fetch job offer');
+                }
+                const offer = await res.json();
+                if (offer && offer.userId !== user.id) {
+                    return NextResponse.redirect(new URL('/', request.url));
+                }
+            } catch (error) {
+                console.error('Error fetching job offer:', error);
+                return NextResponse.redirect(new URL('/error', request.url));
             }
         }
     }

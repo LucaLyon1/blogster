@@ -17,7 +17,7 @@ export default function UserBilling() {
 
             const stripeSession = await stripe.billingPortal.sessions.create({
                 customer: stripeCustomerId ?? "",
-                return_url: 'http://localhost:3000/'
+                return_url: '/'
 
             });
             if (stripeSession.url) {
