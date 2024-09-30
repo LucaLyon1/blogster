@@ -8,22 +8,24 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Suspense } from 'react';
 
+
 export function LogInButton() {
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <LogInContent />
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+                <AuthForm />
+            </div>
         </Suspense>
     );
 }
 
-function LogInContent() {
+export const AuthForm = () => {
+    const [isLoading, setIsLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl') || '/';
-
-    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -53,10 +55,9 @@ function LogInContent() {
             setIsLoading(false);
         }
     };
-
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="bg-white shadow-md rounded-lg overflow-hidden max-w-4xl w-full mx-auto flex">
+        <div className="w-full max-w-4xl mx-auto">
+            <div className="bg-white shadow-md rounded-lg overflow-hidden w-full flex">
                 {/* Left side: Placeholder for future image */}
                 <div className="w-1/2 bg-gray-200 items-center justify-center hidden md:flex">
                     <p className="text-gray-500 text-lg font-semibold">Image Placeholder</p>
