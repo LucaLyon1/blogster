@@ -41,12 +41,12 @@ export function RegisterForm() {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="bg-white shadow-md rounded-lg overflow-hidden max-w-4xl w-full mx-auto flex">
                 {/* Left side: Placeholder for future image */}
-                <div className="w-1/2 bg-gray-200 flex items-center justify-center">
+                <div className="w-1/2 bg-gray-200 items-center justify-center hidden md:flex">
                     <p className="text-gray-500 text-lg font-semibold">Image Placeholder</p>
                 </div>
 
                 {/* Right side: Register form */}
-                <div className="w-1/2 p-8">
+                <div className="w-full md:w-1/2 p-8">
                     <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">Register</h2>
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
